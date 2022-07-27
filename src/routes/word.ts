@@ -12,7 +12,7 @@ const wordFeatureDenylist = new Set([
 	"phrase_function",
 	"phrase_node_id",
 	"clause_node_id",
-	"sentence_node_id"
+	"sentence_node_id",
 ])
 
 type Params = {

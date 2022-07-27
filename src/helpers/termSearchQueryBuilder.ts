@@ -13,7 +13,7 @@ const treeNode = (tnt: keyof typeof mapTreeNodeTypes) =>
 const toKVPairs = (obj: any) =>
 	Object.keys(obj).map(k => ({ key: k, value: obj[k] }))
 
-const featureToWhere = ({ key, value }: { key: string, value: string }) =>
+const featureToWhere = ({ key, value }: { key: string; value: string }) =>
 	`${key}='${value}'`
 const searchTermToGroupArrayFilter = (t: SearchTerm, i: number) =>
 	`groupArray(word_uid) FILTER (WHERE ${toKVPairs(t.data).map(featureToWhere).join(" AND ")}) as w${i}`
@@ -34,15 +34,16 @@ const searchTermToSetCoverWs = (searchTerms: SearchTerm[]) => {
 }
 
 type Params = {
-	searchTerms: SearchTerm[],
-	treeNodeType: "phrase"
+	searchTerms: SearchTerm[]
+	treeNodeType:
+	| "phrase"
 	| "clause"
 	| "sentence"
 	| "verse"
-	| "parallel",
-	moduleIds: number[],
-	versificationSchemaId: number,
-	pageNumber?: number,
+	| "parallel"
+	moduleIds: number[]
+	versificationSchemaId: number
+	pageNumber?: number
 	pageSize?: number
 }
 const getTermSearchQuery = ({
@@ -52,7 +53,7 @@ const getTermSearchQuery = ({
 	moduleIds,
 	versificationSchemaId,
 	pageNumber = 0,
-	pageSize = 10
+	pageSize = 10,
 }: Params) => {
 	return `
 		SELECT 

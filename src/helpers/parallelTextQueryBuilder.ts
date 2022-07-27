@@ -1,10 +1,10 @@
 type Params = {
-    parallelIds: number[],
+    parallelIds: number[]
     moduleIds: number[]
 }
 const getTextQuery = ({
     parallelIds,
-    moduleIds
+    moduleIds,
 }: Params) => {
     return `
         SELECT
