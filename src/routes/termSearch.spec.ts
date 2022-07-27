@@ -15,6 +15,37 @@ Deno.test("Term Search Route", async (t) => {
 			assertEquals(count, 5373)
 		}
 	})
+
+	await t.step({
+		name: "should normalize unicode characters",
+		fn: async () => {
+			const { count } = await getTermSearch({
+				searchTerms: [{ invert: false, data: { lexeme: "נפשׁ" } }],
+				treeNodeType: "clause",
+				modules: "ETCBC+BHSA,LXX,Nestle1904",
+				corpusFilter: "",
+				versificationSchema: "kjv",
+			})
+			assertEquals(count, 3)
+		}
+	})
+
+	await t.step({
+		name: "should work with inverted rules",
+		fn: async () => {
+			const { count } = await getTermSearch({
+				searchTerms: [
+					{ invert: false, data: { lexeme: "נפשׁ" } },
+					{ invert: true, data: { lexeme: "נוח" } },
+				],
+				treeNodeType: "parallel",
+				modules: "ETCBC+BHSA,LXX,Nestle1904",
+				corpusFilter: "",
+				versificationSchema: "kjv",
+			})
+			assertEquals(count, 2)
+		}
+	})
 })
 
 
