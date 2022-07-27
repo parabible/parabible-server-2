@@ -10,13 +10,13 @@ const treeNode = (tnt: keyof typeof mapTreeNodeTypes) =>
 		? mapTreeNodeTypes[tnt]
 		: "parallel_id"
 
-const toKVPairs = (obj: any) =>
-	Object.keys(obj).map(k => ({ key: k, value: obj[k] }))
+const toNormalizedKVPairs = (obj: any) =>
+	Object.keys(obj).map(k => ({ key: k, value: obj[k].normalize("NFC") }))
 
 const featureToWhere = ({ key, value }: { key: string; value: string }) =>
 	`${key}='${value}'`
 const searchTermToGroupArrayFilter = (t: SearchTerm, i: number) =>
-	`groupArray(word_uid) FILTER (WHERE ${toKVPairs(t.data).map(featureToWhere).join(" AND ")}) as w${i}`
+	`groupArray(word_uid) FILTER (WHERE ${toNormalizedKVPairs(t.data).map(featureToWhere).join(" AND ")}) as w${i}`
 
 const searchTermToHavingLength = (t: SearchTerm, i: number) =>
 	t.invert
