@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts"
-import { get as getWord } from "../src/routes/word.ts"
+import { get as getWord } from "./word.ts"
 
 Deno.test("Word Route", async (t) => {
 	await t.step({
