@@ -1,5 +1,6 @@
 import { Application, Router, Context } from "https://deno.land/x/oak@v6.5.0/mod.ts"
 import { convertDeserializedQueryObject } from "https://cdn.skypack.dev/friendly-serializer"
+import { parse, generateRid } from "./helpers/reference.ts"
 
 type ErrorResponse = {
 	error: boolean,
@@ -155,9 +156,74 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		const matchingSyntaxNodes = await getTermSearch({
 			searchTerms,
 			treeNodeType,
-			modules,
+			moduleIds: [5, 6, 7], //TODO: create parsing function to get ids from string
 			corpusFilter,
 			versificationSchema: "kjv"
+		})
+		ctx.response.body = matchingSyntaxNodes
+	}
+	catch (error) {
+		console.log(error)
+		return sendError(ctx, {
+			error: true,
+			code: "UNDEFINED_ERROR",
+			message: "An undefined error occurred"
+		}, 500)
+	}
+})
+
+
+
+// HIGHLIGHT ROUTE
+import { get as getHighlight } from "./routes/highlight.ts"
+router.get("/api/v2/highlight", async (ctx) => {
+	console.log("(GET) /HIGHLIGHT")
+	const {
+		t: searchTerms,
+		modules,
+		corpusFilter,
+		versificationSchema,
+	} = convertDeserializedQueryObject(Object.fromEntries(ctx.request.url.searchParams.entries()))
+
+
+	if (!modules) {
+		return sendError(ctx, {
+			error: true,
+			code: "NO_MODULES",
+			message: "No modules provided"
+		}, 400)
+	}
+	if (!Array.isArray(searchTerms) || searchTerms.length === 0) {
+		return sendError(ctx, {
+			error: true,
+			code: "NO_SEARCH_TERMS",
+			message: "No search terms provided"
+		}, 400)
+	}
+	if (!corpusFilter) {
+		return sendError(ctx, {
+			error: true,
+			code: "NO_CORPUS_FILTER",
+			message: "No corpus filter provided"
+		}, 400)
+	}
+	if (corpusFilter && typeof corpusFilter !== "string") {
+		return sendError(ctx, {
+			error: true,
+			code: "INCORRECT_CORPUS_FILTER_TYPE",
+			message: "Corpus Filter must be a string"
+		}, 400)
+	}
+
+	try {
+		const firstCorpus = parse(corpusFilter)[0]
+		const ridForChapter = generateRid(firstCorpus)
+
+		const matchingSyntaxNodes = await getHighlight({
+			searchTerms,
+			moduleIds: [1, 3, 7], //TODO: create parsing function to get ids from string
+			ridForChapter,
+			versificationSchema,
 		})
 		ctx.response.body = matchingSyntaxNodes
 	}
