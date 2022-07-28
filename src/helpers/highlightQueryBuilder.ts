@@ -11,7 +11,7 @@ type Params = {
 	versificationSchemaId: number
 	moduleIds: number[]
 }
-const getTextQuery = ({
+const getHighlightQuery = ({
 	searchTerms,
 	ridForChapter,
 	versificationSchemaId,
@@ -39,4 +39,4 @@ const getTextQuery = ({
 			module_id
 	`
 }
-export { getTextQuery }
+export { getHighlightQuery }

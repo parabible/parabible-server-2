@@ -1,5 +1,5 @@
 import { query } from "../database/connection.ts"
-import { getTextQuery } from "../helpers/highlightQueryBuilder.ts"
+import { getHighlightQuery } from "../helpers/highlightQueryBuilder.ts"
 import { getIdFromSchema } from "../helpers/versificationSchemas.ts"
 
 const moduleHighlightsToArrayOfArrays = (searchTerms: SearchTerm[]) =>
@@ -21,7 +21,7 @@ type Params = {
 const get = ({ searchTerms, ridForChapter, moduleIds, versificationSchema }: Params) =>
     new Promise<HighlightResponse>((resolve, reject) => {
         const versificationSchemaId = getIdFromSchema(versificationSchema)
-        const q = getTextQuery({ searchTerms, ridForChapter, moduleIds, versificationSchemaId })
+        const q = getHighlightQuery({ searchTerms, ridForChapter, moduleIds, versificationSchemaId })
         query(q).then((highlights: ClickhouseResponse<HighlightQueryResponse>) => {
             resolve({
                 data: highlights.data.map(moduleHighlightsToArrayOfArrays(searchTerms)).flat(2)
