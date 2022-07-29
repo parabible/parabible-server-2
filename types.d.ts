@@ -1,3 +1,8 @@
+type Reference = {
+	book: string
+	chapter: number
+	verse: number | false
+}
 type SearchTerm = {
 	uid: string
 	invert: boolean
@@ -6,6 +11,10 @@ type SearchTerm = {
 	}
 }
 
+// The problem with this is that not everything is an array...
+// type Response<T> = {
+// 	data: T[]
+// }
 type ModuleResponse = {
 	data: {
 		abbreviation: string
@@ -39,6 +48,9 @@ type HighlightResponse = {
 		wid: number
 	}[]
 }
+type TextResponse = {
+	data: ParallelTextQueryResult
+}
 
 type ClickhouseResponse<T> = {
 	data: T
@@ -51,21 +63,21 @@ type ClickhouseResponse<T> = {
 		"rows_read": number
 	}
 }
-type ModuleQueryResponse = {
+type ModuleQueryResult = {
 	abbreviation: string
 	module_id: number
 }[]
-type WordQueryResponse = {
+type WordQueryResult = {
 	wid: number
 	module_id: number
 }[]
-type ParallelTextQueryResponse = {
+type ParallelTextQueryResult = {
 	parallel_id: number
 	module_id: number
 	rid: number
 	text: string
 }[]
-type TermSearchQueryResponse = {
+type TermSearchQueryResult = {
 	module_id: number
 	lowest_parallel_id: number
 	parallel_id_set: number[]
@@ -76,4 +88,4 @@ type ModuleHighlights = {
 	module_id: number
 	[word: `w${number}`]: number[]
 }
-type HighlightQueryResponse = ModuleHighlights[]
+type HighlightQueryResult = ModuleHighlights[]

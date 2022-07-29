@@ -42,6 +42,7 @@ type Params = {
 	| "verse"
 	| "parallel"
 	moduleIds: number[]
+	parallelIdQuery: string
 	versificationSchemaId: number
 	pageNumber?: number
 	pageSize?: number
@@ -49,7 +50,7 @@ type Params = {
 const getTermSearchQuery = ({
 	searchTerms,
 	treeNodeType,
-	// parallelIdQuery,
+	parallelIdQuery,
 	moduleIds,
 	versificationSchemaId,
 	pageNumber = 0,
@@ -73,8 +74,9 @@ const getTermSearchQuery = ({
 			HAVING
 				${treeNode(treeNodeType)} > 0
 				AND ${searchTerms.map(searchTermToHavingLength).join("\n\t\t\tAND ")}
-				AND module_id IN (${moduleIds})) t
-		LEFT JOIN ordering_index 
+				AND module_id IN (${moduleIds})
+				AND parallel_id IN (${parallelIdQuery})) t
+		LEFT JOIN ordering_index
 			ON ordering_index.parallel_id = t.lowest_parallel_id
 		WHERE set_cover_possible([${searchTermToSetCoverWs(searchTerms)}]) = 1
 			AND versification_schema_id = ${versificationSchemaId}

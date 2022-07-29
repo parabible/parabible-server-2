@@ -7,17 +7,15 @@ const searchTermToGroupArrayFilter = (t: SearchTerm, i: number) =>
 
 type Params = {
 	searchTerms: SearchTerm[]
-	ridForChapter: number
+	parallelIdQuery: string
 	versificationSchemaId: number
 	moduleIds: number[]
 }
 const getHighlightQuery = ({
 	searchTerms,
-	ridForChapter,
-	versificationSchemaId,
+	parallelIdQuery,
 	moduleIds
 }: Params) => {
-	const chapterId = ridForChapter / 1000
 	return `
 		SELECT
 			module_id,
@@ -26,15 +24,7 @@ const getHighlightQuery = ({
 			word_features
 		WHERE
 			word_features.module_id IN (${moduleIds})
-			AND word_features.parallel_id IN (
-				SELECT
-					parallel.parallel_id
-				FROM
-					parallel
-				WHERE
-					intDiv(parallel.rid, 1000) = ${chapterId}
-					AND parallel.versification_schema_id = ${versificationSchemaId}
-			)
+			AND word_features.parallel_id IN (${parallelIdQuery})
 		GROUP BY
 			module_id
 	`

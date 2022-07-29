@@ -1,38 +1,37 @@
 import { query } from "../database/connection.ts"
-import { getIdFromSchema } from "../helpers/versificationSchemas.ts"
+import { getVersificationSchemaIdFromPrimaryModule, getModuleIdsFromModules } from "../helpers/moduleInfo.ts"
+import { generateParallelIdQueryFromCorpora } from "../helpers/parallelIdQueryBuilder.ts"
 import { getTermSearchQuery } from "../helpers/termSearchQueryBuilder.ts"
 import { getTextQuery } from "../helpers/parallelTextQueryBuilder.ts"
 import { getWordQuery } from "../helpers/wordMapQueryBuilder.ts"
 
 type Params = {
-	searchTerms: SearchTerm[],
+	searchTerms: SearchTerm[]
 	treeNodeType:
 	| "phrase"
 	| "clause"
 	| "sentence"
 	| "verse"
-	| "parallel",
-	modules: string,
-	corpusFilter: string,
-	versificationSchema: string
+	| "parallel"
+	modules: string
+	corpusFilter: string
 }
-const get = ({ searchTerms, treeNodeType, modules, corpusFilter = "", versificationSchema }: Params) =>
+const get = ({ searchTerms, treeNodeType, modules, corpusFilter }: Params) =>
 	new Promise<TermSearchResponse>((mainResolve, mainReject) => {
-		// TODO: convert module names to ids
-		const moduleIds = [1, 3, 7]
-
-		const versificationSchemaId = getIdFromSchema(versificationSchema)
+		const moduleIds = getModuleIdsFromModules(modules)
+		const versificationSchemaId = getVersificationSchemaIdFromPrimaryModule(moduleIds[0])
+		const parallelIdQuery = generateParallelIdQueryFromCorpora({ corpusFilter, versificationSchemaId })
 
 		// Build and run the query
 		const termSearchSql = getTermSearchQuery({
 			searchTerms,
 			treeNodeType,
-			// parallelIdQuery,
+			parallelIdQuery,
 			moduleIds,
 			versificationSchemaId
 		})
 
-		query(termSearchSql).then((matchingSyntaxNodes: ClickhouseResponse<TermSearchQueryResponse>) => {
+		query(termSearchSql).then((matchingSyntaxNodes: ClickhouseResponse<TermSearchQueryResult>) => {
 			const count = matchingSyntaxNodes.rows_before_limit_at_least || -1
 			//TODO: const = theabove might not work if we don't have a result size > the limit... 
 			// // (should test)
@@ -50,23 +49,23 @@ const get = ({ searchTerms, treeNodeType, modules, corpusFilter = "", versificat
 			const orderedResults = data.map(d => d["parallel_id_set"] || [])
 
 			Promise.all([
-				new Promise<WordQueryResponse>((resolve, reject) => {
+				new Promise<WordQueryResult>((resolve, reject) => {
 					const wordUids = searchTerms.map((_, i) => data.map(d => d[`w${i}`])).flat(3)
 					const wordQuery = getWordQuery({ wordUids })
-					query(wordQuery).then((wordResult: ClickhouseResponse<WordQueryResponse>) => {
+					query(wordQuery).then((wordResult: ClickhouseResponse<WordQueryResult>) => {
 						resolve(wordResult["data"])
 					}).catch(reject)
 				}),
-				new Promise<ParallelTextQueryResponse>((resolve, reject) => {
+				new Promise<ParallelTextQueryResult>((resolve, reject) => {
 					const parallelIds = orderedResults.flat()
 					const parallelTextQuery = getTextQuery({ moduleIds, parallelIds })
-					query(parallelTextQuery).then((parallelTextResult: ClickhouseResponse<ParallelTextQueryResponse>) => {
+					query(parallelTextQuery).then((parallelTextResult: ClickhouseResponse<ParallelTextQueryResult>) => {
 						resolve(parallelTextResult.data)
 					}).catch(reject)
 				})
 			]).then(([matchingWords, matchingText]: [
-				matchingWords: WordQueryResponse,
-				matchingText: ParallelTextQueryResponse
+				matchingWords: WordQueryResult,
+				matchingText: ParallelTextQueryResult
 			]) => {
 				mainResolve({
 					count,

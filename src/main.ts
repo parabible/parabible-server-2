@@ -1,6 +1,5 @@
 import { Application, Router, Context } from "https://deno.land/x/oak@v6.5.0/mod.ts"
 import { convertDeserializedQueryObject } from "https://cdn.skypack.dev/friendly-serializer"
-import { parse, generateRid } from "./helpers/reference.ts"
 
 type ErrorResponse = {
 	error: boolean,
@@ -102,6 +101,31 @@ router.get("/api/v2/word", async (ctx) => {
 	}
 })
 
+// TEXT ROUTE
+import { get as getText } from "./routes/text.ts"
+router.get("/api/v2/text", async (ctx) => {
+	console.log("(GET) /TEXT")
+	const [hasP, params] = hasParams(ctx, ["modules", "corpusFilter"])
+	if (!hasP) {
+		return
+	}
+	const { modules, corpusFilter } = params
+
+	try {
+		const parallelTexts: TextResponse = await getText({
+			corpusFilter,
+			modules,
+		})
+		ctx.response.body = parallelTexts
+	}
+	catch (error) {
+		console.error("ERROR FETCHING WORD:")
+		console.error(error)
+		ctx.response.body = error.response
+		ctx.response.status = error.status
+	}
+})
+
 
 // TERM SEARCH ROUTE
 import { get as getTermSearch } from "./routes/termSearch.ts"
@@ -156,9 +180,8 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		const matchingSyntaxNodes = await getTermSearch({
 			searchTerms,
 			treeNodeType,
-			moduleIds: [5, 6, 7], //TODO: create parsing function to get ids from string
+			modules,
 			corpusFilter,
-			versificationSchema: "kjv"
 		})
 		ctx.response.body = matchingSyntaxNodes
 	}
@@ -216,14 +239,10 @@ router.get("/api/v2/highlight", async (ctx) => {
 	}
 
 	try {
-		const firstCorpus = parse(corpusFilter)[0]
-		const ridForChapter = generateRid(firstCorpus)
-
 		const matchingSyntaxNodes = await getHighlight({
 			searchTerms,
-			moduleIds: [1, 3, 7], //TODO: create parsing function to get ids from string
-			ridForChapter,
-			versificationSchema,
+			modules, //TODO: create parsing function to get ids from string
+			corpusFilter,
 		})
 		ctx.response.body = matchingSyntaxNodes
 	}

@@ -1,17 +1,17 @@
 type Params = {
-    wordUids: number[]
+	wordUids: number[]
 }
 const getWordQuery = ({
-    wordUids
+	wordUids
 }: Params) => {
-    return `
-        SELECT
-            wid,
-            module_id
-        FROM
-            word_features
-        WHERE
-            word_uid IN (${wordUids})
-    `
+	return `
+		SELECT
+			wid,
+			module_id
+		FROM
+			word_features
+		WHERE
+			word_uid IN (${wordUids})
+	`
 }
 export { getWordQuery }

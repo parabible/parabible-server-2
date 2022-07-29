@@ -6,7 +6,7 @@ const get = () => new Promise<ModuleResponse>((resolve, reject) => {
 				abbreviation
 			FROM
 				module_info`,
-	).then((response: ClickhouseResponse<ModuleQueryResponse>) => {
+	).then((response: ClickhouseResponse<ModuleQueryResult>) => {
 		// response has a bunch of other stuff that we don't want to send in resolve
 		resolve({ data: response.data })
 	}).catch(error => {

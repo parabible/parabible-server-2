@@ -2,11 +2,6 @@ import bookDetails from "../data/bookDetails.json" assert { type: "json" }
 import ReferenceParser from "https://cdn.skypack.dev/referenceparser"
 const rp = new ReferenceParser()
 
-type Reference = {
-	book: string
-	chapter: number
-	verse: number
-}
 // const _groupConsecutiveRids = (rids) => {
 // 	const ridSort = rids.sort()
 // 	return ridSort.reduce((a, v) => {
@@ -105,7 +100,7 @@ const _getBookInt = (book: string) => {
 const generateRid = (reference: Reference) => {
 	const book = _getBookInt(reference.book) * 1000000
 	const ch = reference.chapter * 1000
-	const v = "verse" in reference ? reference.verse : 0
+	const v = reference.verse ? reference.verse : 0
 	return book + ch + v
 }
 
@@ -117,9 +112,7 @@ const generateRid = (reference: Reference) => {
 
 
 
-const parse = (ref: string) =>
-	ref.split(",")
-		.map(r => rp.parse(r.trim()))
+const parse = (ref: string) => rp.parse(ref.trim())
 export {
 	parse,
 	generateRid,
