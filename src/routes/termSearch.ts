@@ -1,5 +1,5 @@
 import { query } from "../database/connection.ts"
-import { getVersificationSchemaIdFromPrimaryModule, getModuleIdsFromModules } from "../helpers/moduleInfo.ts"
+import { getVersificationSchemaIdFromModuleId, getModuleIdsFromModules } from "../helpers/moduleInfo.ts"
 import { generateParallelIdQueryFromCorpora } from "../helpers/parallelIdQueryBuilder.ts"
 import { getTermSearchQuery } from "../helpers/termSearchQueryBuilder.ts"
 import { getTextQuery } from "../helpers/parallelTextQueryBuilder.ts"
@@ -15,12 +15,21 @@ type Params = {
 	| "parallel"
 	modules: string
 	corpusFilter: string
+	pageNumber: number
+	pageSize: number
 }
-const get = ({ searchTerms, treeNodeType, modules, corpusFilter }: Params) =>
+const get = ({
+	searchTerms,
+	treeNodeType,
+	modules,
+	corpusFilter = "",
+	pageNumber = 0,
+	pageSize = 10,
+}: Params) =>
 	new Promise<TermSearchResponse>((mainResolve, mainReject) => {
 		const moduleIds = getModuleIdsFromModules(modules)
-		const versificationSchemaId = getVersificationSchemaIdFromPrimaryModule(moduleIds[0])
-		const parallelIdQuery = generateParallelIdQueryFromCorpora({ corpusFilter, versificationSchemaId })
+		const versificationSchemaId = getVersificationSchemaIdFromModuleId(moduleIds[0])
+		const parallelIdQuery = generateParallelIdQueryFromCorpora({ corpusFilter, moduleIds })
 
 		// Build and run the query
 		const termSearchSql = getTermSearchQuery({
@@ -28,7 +37,9 @@ const get = ({ searchTerms, treeNodeType, modules, corpusFilter }: Params) =>
 			treeNodeType,
 			parallelIdQuery,
 			moduleIds,
-			versificationSchemaId
+			versificationSchemaId,
+			pageNumber,
+			pageSize
 		})
 
 		query(termSearchSql).then((matchingSyntaxNodes: ClickhouseResponse<TermSearchQueryResult>) => {
@@ -79,7 +90,7 @@ const get = ({ searchTerms, treeNodeType, modules, corpusFilter }: Params) =>
 				mainReject(error)
 			})
 		}).catch(error => {
-			console.log("Error while searching for terms")
+			console.error("Error while searching for terms")
 			mainReject(error)
 		})
 	})

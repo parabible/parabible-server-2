@@ -1,4 +1,5 @@
 import { generateRid, parse } from "./reference.ts"
+import { getVersificationSchemaIdFromModuleId, getNameFromVersificationId } from "./moduleInfo.ts"
 
 const verseToCondition = (reference: Reference) => reference.verse
 	? `rid = ${generateRid(reference)}`
@@ -66,12 +67,57 @@ const parseCorpusPartial = (corpusPartial: string, { previousBook, previousChapt
 		? parse(corpusPartial)
 		: parseCorpusWithoutCorpus(corpusPartial, { previousBook, previousChapter, previousVerse })
 
+const distinct = <T>(...arr: any[]) => Array.from(new Set<T>(...arr))
+
+type CorpusCollection = "OT" | "NT"
+const vSchemaCorpusCoverage: {
+	[schemaName: string]: CorpusCollection[]
+} = {
+	"kjv": ["OT", "NT"],
+	"bhs": ["OT"],
+	"gnt": ["NT"],
+	"lxx": ["OT"],
+}
+// Corpora Constraints
+// OT: 0 - 39_999_999
+// NT: 40_000_000 - 66_999_999
+const constraints = {
+	"OT": [0, 39_999_999],
+	"NT": [40_000_000, 66_999_999]
+}
+const moduleIdsToVersificationSchemaConstraints = (moduleIds: number[]) => {
+	const schemas = moduleIds
+		.map(getVersificationSchemaIdFromModuleId)
+		.map(getNameFromVersificationId)
+
+	const corporaCoverage = distinct<CorpusCollection>(schemas.map(s => vSchemaCorpusCoverage[s]).flat())
+
+	const moduleIdByCorpus = Object.fromEntries(corporaCoverage.map(corpusCollection => [
+		corpusCollection,
+		// Get the first moduleId that matches each corpus range
+		moduleIds.find((_, i) => vSchemaCorpusCoverage[schemas[i]].includes(corpusCollection)) || -1
+	]))
+
+	if (distinct(Object.values(moduleIdByCorpus)).length === 1) {
+		return `versification_schema_id = ${getVersificationSchemaIdFromModuleId(Object.values(moduleIdByCorpus)[0])}`
+	}
+	else {
+		return "(" + corporaCoverage.map(c => {
+			const [minRid, maxRid] = constraints[c]
+			return `
+				(versification_schema_id = ${getVersificationSchemaIdFromModuleId(moduleIdByCorpus[c])}
+				AND rid > ${minRid} AND rid < ${maxRid})`
+		}).join("\n\t\t\t\tOR\n") + ")"
+	}
+}
+
 
 type Params = {
-	versificationSchemaId: number,
+	// versificationSchemaId: number,
+	moduleIds: number[],
 	corpusFilter: string,
 }
-const generateParallelIdQueryFromCorpora = ({ versificationSchemaId, corpusFilter }: Params) => {
+const generateParallelIdQueryFromCorpora = ({ moduleIds, corpusFilter }: Params) => {
 	const corpora = corpusFilter.split(",")
 	const corporaRanges = corpora.map(corpus => corpus.split(/[-–—]/))
 	const corporaConditions: string[] = []
@@ -98,17 +144,15 @@ const generateParallelIdQueryFromCorpora = ({ versificationSchemaId, corpusFilte
 		}
 	})
 
-	const r = `
+	return `
 		SELECT
 			parallel_id
 		FROM
 			parallel
 		WHERE
-			versification_schema_id = ${versificationSchemaId}
-			AND (${corporaConditions.join(" OR ")})
+			${moduleIdsToVersificationSchemaConstraints(moduleIds)}
+			${corpusFilter.length > 0 ? `AND (${corporaConditions.join(" OR ")})` : ""}
 	`
-	console.log(r)
-	return r
 }
 
 export { generateParallelIdQueryFromCorpora }

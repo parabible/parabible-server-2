@@ -135,7 +135,9 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		t: searchTerms,
 		treeNodeType,
 		modules,
-		corpusFilter
+		corpusFilter,
+		pageNumber,
+		pageSize
 	} = convertDeserializedQueryObject(Object.fromEntries(ctx.request.url.searchParams.entries()))
 
 
@@ -182,11 +184,13 @@ router.get("/api/v2/termSearch", async (ctx) => {
 			treeNodeType,
 			modules,
 			corpusFilter,
+			pageNumber,
+			pageSize,
 		})
 		ctx.response.body = matchingSyntaxNodes
 	}
 	catch (error) {
-		console.log(error)
+		console.error(error)
 		return sendError(ctx, {
 			error: true,
 			code: "UNDEFINED_ERROR",

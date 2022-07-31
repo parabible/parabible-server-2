@@ -4,6 +4,7 @@ type ModuleInfoResult = {
 	abbreviation: string
 	module_id: number
 	versification_schema_id: number
+	versification_schema: string
 }[]
 let moduleAbbreviationToModuleId: {
 	[key: string]: number
@@ -11,9 +12,12 @@ let moduleAbbreviationToModuleId: {
 let moduleIdToVersificationId: {
 	[key: number]: number
 } = {}
+let versificationIdToName: {
+	[key: number]: string
+} = {}
 
 const populate = () => {
-	query(`SELECT abbreviation, versification_schema_id, module_id FROM module_info`).then((response: ClickhouseResponse<ModuleInfoResult>) => {
+	query(`SELECT abbreviation, versification_schema, versification_schema_id, module_id FROM module_info`).then((response: ClickhouseResponse<ModuleInfoResult>) => {
 		moduleAbbreviationToModuleId = Object.fromEntries(response.data.map(moduleInfo => [
 			moduleInfo.abbreviation.toLowerCase(),
 			moduleInfo.module_id
@@ -22,26 +26,34 @@ const populate = () => {
 			moduleInfo.module_id,
 			moduleInfo.versification_schema_id
 		]))
+		versificationIdToName = Object.fromEntries(response.data.map(moduleInfo => [
+			moduleInfo.versification_schema_id,
+			moduleInfo.versification_schema
+		]))
 	}).catch(_ => {
 		setTimeout(populate, 1 * 1000)
 	})
 }
 populate()
 
-const getVersificationSchemaIdFromPrimaryModule = (moduleId: number) => {
-	if (Object.keys(moduleIdToVersificationId).length > 0) {
-		return moduleId in moduleIdToVersificationId ? moduleIdToVersificationId[moduleId] : -1
-	}
-	return -1
-}
+const getVersificationSchemaIdFromModuleId = (moduleId: number) =>
+	moduleId in moduleIdToVersificationId ? moduleIdToVersificationId[moduleId] : -1
+
+const getNameFromVersificationId = (id: number) =>
+	id in versificationIdToName ? versificationIdToName[id] : ""
+
 const getModuleIdsFromModules = (moduleString: string) => {
 	if (!moduleString.length) {
 		return [1]
 	}
 	return moduleString
 		.split(",")
-		.map(m => m.trim())
+		.map(m => m.trim().toLowerCase())
 		.map(m => m in moduleAbbreviationToModuleId ? moduleAbbreviationToModuleId[m] : -1)
 		.filter(i => i != -1)
 }
-export { getVersificationSchemaIdFromPrimaryModule, getModuleIdsFromModules }
+export {
+	getVersificationSchemaIdFromModuleId,
+	getNameFromVersificationId,
+	getModuleIdsFromModules,
+}

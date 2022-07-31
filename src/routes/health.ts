@@ -1,7 +1,7 @@
-import { getVersificationSchemaIdFromPrimaryModule } from "../helpers/moduleInfo.ts"
+import { getVersificationSchemaIdFromModuleId } from "../helpers/moduleInfo.ts"
 
 const get = () => {
-	const schemaId = getVersificationSchemaIdFromPrimaryModule(1)
+	const schemaId = getVersificationSchemaIdFromModuleId(1)
 	return schemaId === -1
 		? {
 			response: { error: false }

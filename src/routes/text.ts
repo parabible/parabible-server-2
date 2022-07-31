@@ -1,25 +1,44 @@
 import { query } from "../database/connection.ts"
 import { generateParallelIdQueryFromCorpora } from "../helpers/parallelIdQueryBuilder.ts"
 import { getTextQuery } from "../helpers/parallelTextQueryBuilder.ts"
-import { getVersificationSchemaIdFromPrimaryModule, getModuleIdsFromModules } from "../helpers/moduleInfo.ts"
+import { getParallelOrdering } from "../helpers/parallelIdOrderQueryBuilder.ts"
+import { getModuleIdsFromModules, getVersificationSchemaIdFromModuleId } from "../helpers/moduleInfo.ts"
 
 type Params = {
 	modules: string
 	corpusFilter: string
 }
 const get = ({ corpusFilter, modules }: Params) =>
-	new Promise<TextResponse>((resolve, reject) => {
+	new Promise<TextResponse>((mainResolve, mainReject) => {
 		const moduleIds = getModuleIdsFromModules(modules)
-		const versificationSchemaId = getVersificationSchemaIdFromPrimaryModule(moduleIds[0])
+		const parallelIdQuery = generateParallelIdQueryFromCorpora({ corpusFilter, moduleIds })
 
-		// Parallel_ids in getTextQuery could(conceivably) be a string query...
-		// Maybe we should refactor to support that...
-		const parallelIdSelectStatement = generateParallelIdQueryFromCorpora({ corpusFilter, versificationSchemaId })
-		const q = getTextQuery({ parallelIdSelectStatement, moduleIds })
-		query(q).then((parallelTextResult: ClickhouseResponse<ParallelTextQueryResult>) => {
-			resolve({
-				data: parallelTextResult.data
+		Promise.all([
+			new Promise<ParallelTextQueryResult>((resolve, reject) => {
+				const q = getTextQuery({ parallelIdQuery, moduleIds })
+				return query(q).then((parallelTextResult: ClickhouseResponse<ParallelTextQueryResult>) => {
+					resolve(parallelTextResult.data)
+				}).catch(reject)
+			}),
+			new Promise<ParallelOrderingResult>((resolve, reject) => {
+				const versificationSchemaId = getVersificationSchemaIdFromModuleId(moduleIds[0])
+				const q = getParallelOrdering({ parallelIdQuery, versificationSchemaId })
+				return query(q).then((orderingResult: ClickhouseResponse<ParallelOrderingResult>) => {
+					resolve(orderingResult.data)
+				}).catch(reject)
 			})
-		}).catch(reject)
+		]).then(([matchingText, order]: [
+			matchingText: ParallelTextQueryResult,
+			order: ParallelOrderingResult
+		]) => {
+			mainResolve({
+				matchingText,
+				order: order.map(row => row.parallel_id)
+			})
+		}).catch(error => {
+			console.error("Error while gathering words and paralel text")
+			console.error(error)
+			mainReject(error)
+		})
 	})
 export { get }

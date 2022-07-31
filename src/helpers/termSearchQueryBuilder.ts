@@ -1,3 +1,4 @@
+const PARALLEL_TREE_NODE = "parallel"
 const mapTreeNodeTypes = {
 	"phrase": "phrase_node_id",
 	"clause": "clause_node_id",
@@ -44,8 +45,8 @@ type Params = {
 	moduleIds: number[]
 	parallelIdQuery: string
 	versificationSchemaId: number
-	pageNumber?: number
-	pageSize?: number
+	pageNumber: number
+	pageSize: number
 }
 const getTermSearchQuery = ({
 	searchTerms,
@@ -53,15 +54,16 @@ const getTermSearchQuery = ({
 	parallelIdQuery,
 	moduleIds,
 	versificationSchemaId,
-	pageNumber = 0,
-	pageSize = 10,
+	pageNumber,
+	pageSize,
 }: Params) => {
+	// TODO: Benchmark against having the `parallel_id IN` condition inside and outside the VIEW
 	return `
 		SELECT 
 			*
 		FROM VIEW(
 			SELECT
-				module_id,
+				${treeNodeType !== PARALLEL_TREE_NODE ? "module_id," : ""}
 				min(parallel_id) lowest_parallel_id,
 				groupUniqArray(parallel_id) parallel_id_set,
 				${treeNode(treeNodeType)} tree_node,
@@ -69,12 +71,11 @@ const getTermSearchQuery = ({
 			FROM
 				word_features
 			GROUP BY
-				module_id,
+				${treeNodeType !== PARALLEL_TREE_NODE ? "module_id," : ""}
 				${treeNode(treeNodeType)}
 			HAVING
 				${treeNode(treeNodeType)} > 0
 				AND ${searchTerms.map(searchTermToHavingLength).join("\n\t\t\tAND ")}
-				AND module_id IN (${moduleIds})
 				AND parallel_id IN (${parallelIdQuery})) t
 		LEFT JOIN ordering_index
 			ON ordering_index.parallel_id = t.lowest_parallel_id

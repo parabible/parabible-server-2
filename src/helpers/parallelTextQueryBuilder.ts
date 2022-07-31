@@ -1,6 +1,6 @@
 type ParamsWithSelectStatement = {
 	moduleIds: number[]
-	parallelIdSelectStatement: string
+	parallelIdQuery: string
 }
 type ParamsWithIds = {
 	moduleIds: number[]
@@ -21,7 +21,7 @@ const getTextQuery = (params: Params) => {
 			parallel
 		WHERE
 			module_id IN (${moduleIds})
-			AND parallel_id IN (${"parallelIds" in params ? params.parallelIds : params.parallelIdSelectStatement})
+			AND parallel_id IN (${"parallelIds" in params ? params.parallelIds : params.parallelIdQuery})
 	`
 }
 export { getTextQuery }

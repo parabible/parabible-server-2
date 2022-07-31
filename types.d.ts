@@ -49,7 +49,8 @@ type HighlightResponse = {
 	}[]
 }
 type TextResponse = {
-	data: ParallelTextQueryResult
+	matchingText: ParallelTextQueryResult,
+	order: number[]
 }
 
 type ClickhouseResponse<T> = {
@@ -70,6 +71,9 @@ type ModuleQueryResult = {
 type WordQueryResult = {
 	wid: number
 	module_id: number
+}[]
+type ParallelOrderingResult = {
+	parallel_id: number
 }[]
 type ParallelTextQueryResult = {
 	parallel_id: number
