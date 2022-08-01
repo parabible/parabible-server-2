@@ -76,7 +76,8 @@ const getTermSearchQuery = ({
 			HAVING
 				${treeNode(treeNodeType)} > 0
 				AND ${searchTerms.map(searchTermToHavingLength).join("\n\t\t\tAND ")}
-				AND parallel_id IN (${parallelIdQuery})) t
+				${parallelIdQuery ? `AND parallel_id IN (${parallelIdQuery})` : ""}
+		) t
 		LEFT JOIN ordering_index
 			ON ordering_index.parallel_id = t.lowest_parallel_id
 		WHERE set_cover_possible([${searchTermToSetCoverWs(searchTerms)}]) = 1
