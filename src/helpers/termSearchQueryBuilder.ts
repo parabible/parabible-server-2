@@ -20,14 +20,14 @@ const searchTermToGroupArrayFilter = (t: SearchTerm, i: number) =>
 	`groupArray(word_uid) FILTER (WHERE ${toNormalizedKVPairs(t.data).map(featureToWhere).join(" AND ")}) as w${i}`
 
 const searchTermToHavingLength = (t: SearchTerm, i: number) =>
-	t.invert
+	t.inverted
 		? `length(w${i}) = 0`
 		: `length(w${i}) > 0`
 
 const searchTermToSetCoverWs = (searchTerms: SearchTerm[]) => {
 	const ret: string[] = []
 	searchTerms.forEach((s: SearchTerm, i: number) => {
-		if (!s.invert) {
+		if (!s.inverted) {
 			ret.push(`w${i}`)
 		}
 	})
