@@ -44,7 +44,7 @@ const getNameFromVersificationId = (id: number) =>
 
 const getModuleIdsFromModules = (moduleString: string) => {
 	if (!moduleString.length) {
-		return [1]
+		return []
 	}
 	return moduleString
 		.split(",")
