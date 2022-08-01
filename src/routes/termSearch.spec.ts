@@ -12,7 +12,7 @@ while (true) {
 
 Deno.test("should return results from BHSA", async () => {
 	const { count } = await getTermSearch({
-		searchTerms: [{ uid: "1", invert: false, data: { lexeme: "אמר" } }],
+		searchTerms: [{ uid: "1", inverted: false, data: { lexeme: "אמר" } }],
 		treeNodeType: "clause",
 		modules: "ETCBC BHSA,ccat LXX,Nestle1904",
 		corpusFilter: "",
@@ -24,7 +24,7 @@ Deno.test("should return results from BHSA", async () => {
 
 Deno.test("should normalize unicode characters", async () => {
 	const { count } = await getTermSearch({
-		searchTerms: [{ uid: "1", invert: false, data: { lexeme: "נפשׁ" } }],
+		searchTerms: [{ uid: "1", inverted: false, data: { lexeme: "נפשׁ" } }],
 		treeNodeType: "clause",
 		modules: "ETCBC BHSA,ccat LXX,Nestle1904",
 		corpusFilter: "",
@@ -37,8 +37,8 @@ Deno.test("should normalize unicode characters", async () => {
 Deno.test("should work with inverted rules", async () => {
 	const { count } = await getTermSearch({
 		searchTerms: [
-			{ uid: "1", invert: false, data: { lexeme: "נפשׁ" } },
-			{ uid: "2", invert: true, data: { lexeme: "נוח" } },
+			{ uid: "1", inverted: false, data: { lexeme: "נפשׁ" } },
+			{ uid: "2", inverted: true, data: { lexeme: "נוח" } },
 		],
 		treeNodeType: "parallel",
 		modules: "ETCBC BHSA,ccat LXX,Nestle1904",
@@ -52,8 +52,8 @@ Deno.test("should work with inverted rules", async () => {
 Deno.test("should work with inverted rules", async () => {
 	const { count } = await getTermSearch({
 		searchTerms: [
-			{ uid: "1", invert: false, data: { lexeme: "נפשׁ" } },
-			{ uid: "2", invert: true, data: { lexeme: "נוח" } },
+			{ uid: "1", inverted: false, data: { lexeme: "נפשׁ" } },
+			{ uid: "2", inverted: true, data: { lexeme: "נוח" } },
 		],
 		treeNodeType: "parallel",
 		modules: "ETCBC BHSA,ccat LXX,Nestle1904",
@@ -67,8 +67,8 @@ Deno.test("should work with inverted rules", async () => {
 Deno.test("should find results across versions (e.g. אֱלֹהִים translated θεός)", async () => {
 	const { count } = await getTermSearch({
 		searchTerms: [
-			{ uid: "1", invert: false, data: { lexeme: "אֱלֹהִים" } },
-			{ uid: "2", invert: false, data: { lexeme: "θεός" } },
+			{ uid: "1", inverted: false, data: { lexeme: "אֱלֹהִים" } },
+			{ uid: "2", inverted: false, data: { lexeme: "θεός" } },
 		],
 		treeNodeType: "parallel",
 		modules: "net",
