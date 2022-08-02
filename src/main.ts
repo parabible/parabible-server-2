@@ -105,15 +105,15 @@ router.get("/api/v2/word", async (ctx) => {
 import { get as getText } from "./routes/text.ts"
 router.get("/api/v2/text", async (ctx) => {
 	console.log("(GET) /TEXT")
-	const [hasP, params] = hasParams(ctx, ["modules", "corpusFilter"])
+	const [hasP, params] = hasParams(ctx, ["modules", "reference"])
 	if (!hasP) {
 		return
 	}
-	const { modules, corpusFilter } = params
+	const { modules, reference } = params
 
 	try {
 		const parallelTexts: TextResponse = await getText({
-			corpusFilter,
+			reference,
 			modules,
 		})
 		ctx.response.body = parallelTexts

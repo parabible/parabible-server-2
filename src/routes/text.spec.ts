@@ -13,7 +13,7 @@ while (true) {
 Deno.test("should return Gen 1:1 in Hebrew", async () => {
 	const gen1v1 = await getText({
 		modules: "etcbc bhsa",
-		corpusFilter: "gen 1:1"
+		reference: "gen 1:1"
 	})
 	assertEquals(gen1v1, {
 		"matchingText": [
@@ -31,7 +31,7 @@ Deno.test("should return Gen 1:1 in Hebrew", async () => {
 Deno.test("should return verses across corpora", async () => {
 	const gen1v1 = await getText({
 		modules: "etcbc bhsa,net",
-		corpusFilter: "mal3:24-mat1:1"
+		reference: "mal3:24-mat1:1"
 	})
 	// right now it's failing because of versification schemas (bhs doesn't have mt3)
 	assertEquals(gen1v1, {

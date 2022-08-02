@@ -6,12 +6,12 @@ import { getModuleIdsFromModules, getVersificationSchemaIdFromModuleId } from ".
 
 type Params = {
 	modules: string
-	corpusFilter: string
+	reference: string
 }
-const get = ({ corpusFilter, modules }: Params) =>
+const get = ({ reference, modules }: Params) =>
 	new Promise<TextResponse>((mainResolve, mainReject) => {
 		const moduleIds = getModuleIdsFromModules(modules)
-		const parallelIdQuery = generateParallelIdQueryFromCorpora({ corpusFilter, moduleIds })
+		const parallelIdQuery = generateParallelIdQueryFromCorpora({ corpusFilter: reference, moduleIds })
 
 		Promise.all([
 			new Promise<ParallelTextQueryResult>((resolve, reject) => {
