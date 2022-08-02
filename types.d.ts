@@ -5,7 +5,7 @@ type Reference = {
 }
 type SearchTerm = {
 	uid: string
-	invert: boolean
+	inverted: boolean
 	data: {
 		[key: string]: string
 	}
