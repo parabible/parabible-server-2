@@ -1,6 +1,5 @@
 import { query } from "../database/connection.ts"
-import { getVersificationSchemaIdFromModuleId, getModuleIdsFromModules } from "../helpers/moduleInfo.ts"
-import { generateParallelIdQueryFromCorpora } from "../helpers/parallelIdQueryBuilder.ts"
+import { getVersificationSchemaIdFromModuleId } from "../helpers/moduleInfo.ts"
 import { getTermSearchQuery } from "../helpers/termSearchQueryBuilder.ts"
 import { getTextQuery } from "../helpers/parallelTextQueryBuilder.ts"
 import { getWordQuery } from "../helpers/wordMapQueryBuilder.ts"
@@ -13,23 +12,21 @@ type Params = {
 	| "sentence"
 	| "verse"
 	| "parallel"
-	modules: string
-	corpusFilter: string
+	parallelIdQuery: string
+	moduleIds: number[]
 	pageNumber: number
 	pageSize: number
 }
 const get = ({
 	searchTerms,
 	treeNodeType,
-	modules,
-	corpusFilter = "",
+	parallelIdQuery,
+	moduleIds,
 	pageNumber = 0,
 	pageSize = 10,
 }: Params) =>
 	new Promise<TermSearchResponse>((mainResolve, mainReject) => {
-		const moduleIds = getModuleIdsFromModules(modules)
 		const versificationSchemaId = getVersificationSchemaIdFromModuleId(moduleIds[0])
-		const parallelIdQuery = generateParallelIdQueryFromCorpora({ corpusFilter, moduleIds })
 
 		// Build and run the query
 		const termSearchSql = getTermSearchQuery({

@@ -1,5 +1,7 @@
 import { Application, Router, Context } from "https://deno.land/x/oak@v6.5.0/mod.ts"
 import { convertDeserializedQueryObject } from "https://cdn.skypack.dev/friendly-serializer"
+import { getModuleIdsFromModules } from "./helpers/moduleInfo.ts"
+import { generateParallelIdQueryFromCorpora } from "./helpers/parallelIdQueryBuilder.ts"
 
 type ErrorResponse = {
 	error: boolean,
@@ -132,20 +134,33 @@ import { get as getTermSearch } from "./routes/termSearch.ts"
 router.get("/api/v2/termSearch", async (ctx) => {
 	console.log("(GET) /TERMSEARCH")
 	const {
-		t: searchTerms,
+		t: unprocessedSearchTerms,
 		treeNodeType,
 		modules,
 		corpusFilter,
 		pageNumber,
 		pageSize
 	} = convertDeserializedQueryObject(Object.fromEntries(ctx.request.url.searchParams.entries()))
-
+	const searchTerms: SearchTerm[] = unprocessedSearchTerms.map((t: any) => {
+		const { inverted, ...term } = t
+		return (inverted === "1" || inverted === "true")
+			? { inverted: true, ...term }
+			: { inverted: false, ...term }
+	})
 
 	if (!modules) {
 		return sendError(ctx, {
 			error: true,
 			code: "NO_MODULES",
 			message: "No modules provided"
+		}, 400)
+	}
+	const moduleIds = getModuleIdsFromModules(modules)
+	if (moduleIds.length === 0) {
+		return sendError(ctx, {
+			error: true,
+			code: "NO_MODULES",
+			message: "Could not parse module names. Try /api/v2/module for available modules."
 		}, 400)
 	}
 	if (!Array.isArray(searchTerms) || searchTerms.length === 0) {
@@ -162,13 +177,22 @@ router.get("/api/v2/termSearch", async (ctx) => {
 			message: "No TreeNode Type provided (verse, sentence, clause, phrase)"
 		}, 400)
 	}
-	if (corpusFilter && typeof corpusFilter !== "string") {
-		return sendError(ctx, {
-			error: true,
-			code: "INCORRECT_CORPUS_FILTER_TYPE",
-			message: "Corpus Filter must be a string"
-		}, 400)
-	}
+	// if (corpusFilter && typeof corpusFilter !== "string") {
+	// 	return sendError(ctx, {
+	// 		error: true,
+	// 		code: "INCORRECT_CORPUS_FILTER_TYPE",
+	// 		message: "Corpus Filter must be a string"
+	// 	}, 400)
+	// }
+	const parallelIdQuery = corpusFilter ? generateParallelIdQueryFromCorpora({ corpusFilter, moduleIds }) : ""
+	// TODO: some kind of sanity check on the quality of corpus filter input...
+	// if (!parallelIdQuery) {
+	// 	return sendError(ctx, {
+	// 		error: true,
+	// 		code: "CORPUS_FILTER_ERROR",
+	// 		message: "Could not parse corpusFilter into corpora constraints."
+	// 	}, 400)
+	// }
 
 	// ? await (getParallelIdsFromCorpusFilter({ corpusFilter, mainModuleId: moduleIds[0] }))
 	// const parallelIdQuery = corpusFilter
@@ -182,8 +206,8 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		const matchingSyntaxNodes = await getTermSearch({
 			searchTerms,
 			treeNodeType,
-			modules,
-			corpusFilter,
+			moduleIds,
+			parallelIdQuery,
 			pageNumber,
 			pageSize,
 		})
