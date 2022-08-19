@@ -11,7 +11,7 @@ while (true) {
 }
 
 Deno.test("should return results from BHSA", async () => {
-	const { count } = await getTermSearch({
+	const results = await getTermSearch({
 		searchTerms: [{ uid: "1", inverted: false, data: { lexeme: "אמר" } }],
 		treeNodeType: "clause",
 		moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
@@ -19,7 +19,10 @@ Deno.test("should return results from BHSA", async () => {
 		page: 0,
 		pageSize: 10
 	})
-	assertEquals(count, 5373)
+	assertEquals(results.count, 5373)
+	assertEquals("warmWords" in results, true)
+	assertEquals("orderedResults" in results, true)
+	assertEquals(results.orderedResults.length, 10)
 })
 
 Deno.test("should normalize unicode characters", async () => {
