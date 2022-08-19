@@ -3,6 +3,9 @@ import { convertDeserializedQueryObject } from "https://cdn.skypack.dev/friendly
 import { getModuleIdsFromModules } from "./helpers/moduleInfo.ts"
 import { generateParallelIdQueryFromCorpora } from "./helpers/parallelIdQueryBuilder.ts"
 
+import { renderTermSearchHtml } from "./renderTermSearchHtml.tsx"
+
+
 type ErrorResponse = {
 	error: boolean,
 	code: string,
@@ -211,7 +214,16 @@ router.get("/api/v2/termSearch", async (ctx) => {
 			pageNumber,
 			pageSize,
 		})
+
+		const accepts = ctx.request.headers.get("accept") || ""
+		if (accepts.includes("application/json")) {
 		ctx.response.body = matchingSyntaxNodes
+			return
+		}
+		else {
+			ctx.response.body = await renderTermSearchHtml(matchingSyntaxNodes, +page, +pageSize, ctx.request.url)
+			return
+		}
 	}
 	catch (error) {
 		console.error(error)
