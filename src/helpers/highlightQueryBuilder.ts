@@ -18,7 +18,7 @@ const getHighlightQuery = ({
 }: Params) => {
 	return `
 		SELECT
-			module_id,
+			module_id moduleId,
 			${searchTerms.map(searchTermToGroupArrayFilter).join(",\n\t\t\t")}
 		FROM
 			word_features

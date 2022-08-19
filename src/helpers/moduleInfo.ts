@@ -2,9 +2,9 @@ import { query } from "../database/connection.ts"
 
 type ModuleInfoResult = {
 	abbreviation: string
-	module_id: number
-	versification_schema_id: number
-	versification_schema: string
+	moduleId: number
+	versificationSchemaId: number
+	versificationSchema: string
 }[]
 let moduleAbbreviationToModuleId: {
 	[key: string]: number
@@ -17,18 +17,24 @@ let versificationIdToName: {
 } = {}
 
 const populate = () => {
-	query(`SELECT abbreviation, versification_schema, versification_schema_id, module_id FROM module_info`).then((response: ClickhouseResponse<ModuleInfoResult>) => {
+	query(`SELECT 
+			abbreviation,
+			versification_schema versificationSchema,
+			versification_schema_id versificationSchemaId,
+			module_id moduleId
+		FROM
+			module_info`).then((response: ClickhouseResponse<ModuleInfoResult>) => {
 		moduleAbbreviationToModuleId = Object.fromEntries(response.data.map(moduleInfo => [
 			moduleInfo.abbreviation.toLowerCase(),
-			moduleInfo.module_id
+			moduleInfo.moduleId
 		]))
 		moduleIdToVersificationId = Object.fromEntries(response.data.map(moduleInfo => [
-			moduleInfo.module_id,
-			moduleInfo.versification_schema_id
+			moduleInfo.moduleId,
+			moduleInfo.versificationSchemaId
 		]))
 		versificationIdToName = Object.fromEntries(response.data.map(moduleInfo => [
-			moduleInfo.versification_schema_id,
-			moduleInfo.versification_schema
+			moduleInfo.versificationSchemaId,
+			moduleInfo.versificationSchema
 		]))
 	}).catch(_ => {
 		setTimeout(populate, 1 * 1000)

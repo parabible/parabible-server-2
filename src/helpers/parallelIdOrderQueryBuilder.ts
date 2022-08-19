@@ -9,7 +9,7 @@ const getParallelOrdering = ({
 }: Params) => {
 	return `
 	SELECT
-		DISTINCT(parallel_id)
+		DISTINCT(parallel_id) parallelId
 	FROM
 		parallel
 	LEFT JOIN ordering_index

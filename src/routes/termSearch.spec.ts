@@ -1,5 +1,5 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts"
-import { getVersificationSchemaIdFromModuleId } from "../helpers/moduleInfo.ts"
+import { getVersificationSchemaIdFromModuleId, getModuleIdsFromModules } from "../helpers/moduleInfo.ts"
 import { get as getTermSearch } from "./termSearch.ts"
 
 // This just forces the tests to wait until we can actually resolve module ids etc.
@@ -14,9 +14,9 @@ Deno.test("should return results from BHSA", async () => {
 	const { count } = await getTermSearch({
 		searchTerms: [{ uid: "1", inverted: false, data: { lexeme: "אמר" } }],
 		treeNodeType: "clause",
-		modules: "ETCBC BHSA,ccat LXX,Nestle1904",
-		corpusFilter: "",
-		pageNumber: 0,
+		moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
+		parallelIdQuery: "",
+		page: 0,
 		pageSize: 10
 	})
 	assertEquals(count, 5373)
@@ -26,9 +26,9 @@ Deno.test("should normalize unicode characters", async () => {
 	const { count } = await getTermSearch({
 		searchTerms: [{ uid: "1", inverted: false, data: { lexeme: "נפשׁ" } }],
 		treeNodeType: "clause",
-		modules: "ETCBC BHSA,ccat LXX,Nestle1904",
-		corpusFilter: "",
-		pageNumber: 0,
+		moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
+		parallelIdQuery: "",
+		page: 0,
 		pageSize: 10
 	})
 	assertEquals(count, 3)
@@ -41,9 +41,9 @@ Deno.test("should work with inverted rules", async () => {
 			{ uid: "2", inverted: true, data: { lexeme: "נוח" } },
 		],
 		treeNodeType: "parallel",
-		modules: "ETCBC BHSA,ccat LXX,Nestle1904",
-		corpusFilter: "",
-		pageNumber: 0,
+		moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
+		parallelIdQuery: "",
+		page: 0,
 		pageSize: 10
 	})
 	assertEquals(count, 2)
@@ -56,9 +56,9 @@ Deno.test("should work with inverted rules", async () => {
 			{ uid: "2", inverted: true, data: { lexeme: "נוח" } },
 		],
 		treeNodeType: "parallel",
-		modules: "ETCBC BHSA,ccat LXX,Nestle1904",
-		corpusFilter: "",
-		pageNumber: 0,
+		moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
+		parallelIdQuery: "",
+		page: 0,
 		pageSize: 10
 	})
 	assertEquals(count, 2)
@@ -71,16 +71,16 @@ Deno.test("should find results across versions (e.g. אֱלֹהִים translated
 			{ uid: "2", inverted: false, data: { lexeme: "θεός" } },
 		],
 		treeNodeType: "parallel",
-		modules: "net",
-		corpusFilter: "",
-		pageNumber: 0,
+		moduleIds: getModuleIdsFromModules("net"),
+		parallelIdQuery: "",
+		page: 0,
 		pageSize: 10
 	})
 	assertEquals(count > 0, true)
 })
 
 
-
+// TOOD: should handle corpus filters (parallelIdQuery)
 // TODO: it("should return the right number of words from Nestle1904", async () => {
 // TODO: it("should return the right number of words from LXX", async () => {
 // TODO: it("should return the right number of words from combined", async () => {

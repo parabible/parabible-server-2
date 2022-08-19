@@ -33,7 +33,7 @@ const get = ({ reference, modules }: Params) =>
 		]) => {
 			mainResolve({
 				matchingText,
-				order: order.map(row => row.parallel_id)
+				order: order.map(row => row.parallelId)
 			})
 		}).catch(error => {
 			console.error("Error while gathering words and paralel text")

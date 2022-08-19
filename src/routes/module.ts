@@ -2,7 +2,7 @@ import { query } from "../database/connection.ts"
 
 const get = () => new Promise<ModuleResponse>((resolve, reject) => {
 	query(`SELECT
-				module_id,
+				module_id moduleId,
 				abbreviation
 			FROM
 				module_info`,

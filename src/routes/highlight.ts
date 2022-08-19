@@ -8,7 +8,7 @@ const moduleHighlightsToArrayOfArrays = (searchTerms: SearchTerm[]) =>
 		searchTerms.map(({ uid }, i) =>
 			moduleHighlights[`w${i}`].map(wid => ({
 				uid,
-				module_id: moduleHighlights.module_id,
+				moduleId: moduleHighlights.moduleId,
 				wid
 			}))
 		)

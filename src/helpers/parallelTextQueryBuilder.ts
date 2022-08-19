@@ -13,8 +13,8 @@ const getTextQuery = (params: Params) => {
 
 	return `
 		SELECT
-			parallel_id,
-			module_id,
+			parallel_id parallelId,
+			module_id moduleId,
 			rid,
 			text
 		FROM

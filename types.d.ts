@@ -18,7 +18,7 @@ type SearchTerm = {
 type ModuleResponse = {
 	data: {
 		abbreviation: string
-		module_id: number
+		moduleId: number
 	}[]
 }
 type WordResponse = {
@@ -31,20 +31,24 @@ type TermSearchResponse = {
 	count: number
 	orderedResults: number[][]
 	matchingText: {
-		parallel_id: number
-		module_id: number
+		parallelId: number
+		moduleId: number
 		rid: number
 		text: string
 	}[],
 	matchingWords: {
 		wid: number
-		module_id: number
+		moduleId: number
+	}[]
+	warmWords: {
+		wids: number[]
+		moduleId: number
 	}[]
 }
 type HighlightResponse = {
 	data: {
 		uid: string
-		module_id: number
+		moduleId: number
 		wid: number
 	}[]
 }
@@ -66,30 +70,31 @@ type ClickhouseResponse<T> = {
 }
 type ModuleQueryResult = {
 	abbreviation: string
-	module_id: number
+	moduleId: number
 }[]
 type WordQueryResult = {
 	wid: number
-	module_id: number
+	moduleId: number
 }[]
 type ParallelOrderingResult = {
-	parallel_id: number
+	parallelId: number
 }[]
 type ParallelTextQueryResult = {
-	parallel_id: number
-	module_id: number
+	parallelId: number
+	moduleId: number
 	rid: number
 	text: string
 }[]
 type TermSearchQueryResult = {
-	module_id: number
-	lowest_parallel_id: number
-	parallel_id_set: number[]
-	tree_node: number
+	moduleId?: number
+	lowestParallelId: number
+	parallelIdSet: number[]
+	treeNode: number
+	warmWids?: number[]
 	[word: `w${number}`]: number[]
 }[]
 type ModuleHighlights = {
-	module_id: number
+	moduleId: number
 	[word: `w${number}`]: number[]
 }
 type HighlightQueryResult = ModuleHighlights[]

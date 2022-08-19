@@ -42,19 +42,19 @@ type Params = {
 	| "sentence"
 	| "verse"
 	| "parallel"
-	moduleIds: number[]
 	parallelIdQuery: string
 	versificationSchemaId: number
-	pageNumber: number
+	moduleIds: number[]
+	page: number
 	pageSize: number
 }
 const getTermSearchQuery = ({
 	searchTerms,
 	treeNodeType,
 	parallelIdQuery,
-	moduleIds,
 	versificationSchemaId,
-	pageNumber,
+	moduleIds,
+	page,
 	pageSize,
 }: Params) => {
 	// TODO: Benchmark against having the `parallel_id IN` condition inside and outside the VIEW
@@ -63,10 +63,11 @@ const getTermSearchQuery = ({
 			*
 		FROM VIEW(
 			SELECT
-				${treeNodeType !== PARALLEL_TREE_NODE ? "module_id," : ""}
-				min(parallel_id) lowest_parallel_id,
-				groupUniqArray(parallel_id) parallel_id_set,
-				${treeNode(treeNodeType)} tree_node,
+				${treeNodeType !== PARALLEL_TREE_NODE ? "module_id moduleId," : ""}
+				min(parallel_id) lowestParallelId,
+				groupUniqArray(parallel_id) parallelIdSet,
+				${treeNode(treeNodeType)} treeNode,
+				${treeNodeType !== PARALLEL_TREE_NODE ? `groupArray(wid) FILTER (WHERE module_id IN (${moduleIds})) warmWids,` : ""}
 				${searchTerms.map(searchTermToGroupArrayFilter).join(",\n\t\t\t")}
 			FROM
 				word_features
@@ -79,11 +80,11 @@ const getTermSearchQuery = ({
 				${parallelIdQuery ? `AND parallel_id IN (${parallelIdQuery})` : ""}
 		) t
 		LEFT JOIN ordering_index
-			ON ordering_index.parallel_id = t.lowest_parallel_id
+			ON ordering_index.parallel_id = t.lowestParallelId
 		WHERE set_cover_possible([${searchTermToSetCoverWs(searchTerms)}]) = 1
 			AND versification_schema_id = ${versificationSchemaId}
 		ORDER BY ordering_index.order_in_schema
 		LIMIT ${pageSize}
-		OFFSET ${pageNumber * pageSize}`
+		OFFSET ${page * pageSize}`
 }
 export { getTermSearchQuery }

@@ -14,7 +14,7 @@ type Params = {
 	| "parallel"
 	parallelIdQuery: string
 	moduleIds: number[]
-	pageNumber: number
+	page: number
 	pageSize: number
 }
 const get = ({
@@ -22,7 +22,7 @@ const get = ({
 	treeNodeType,
 	parallelIdQuery,
 	moduleIds,
-	pageNumber = 0,
+	page = 0,
 	pageSize = 10,
 }: Params) =>
 	new Promise<TermSearchResponse>((mainResolve, mainReject) => {
@@ -33,9 +33,9 @@ const get = ({
 			searchTerms,
 			treeNodeType,
 			parallelIdQuery,
-			moduleIds,
 			versificationSchemaId,
-			pageNumber,
+			moduleIds,
+			page,
 			pageSize
 		})
 

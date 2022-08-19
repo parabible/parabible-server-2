@@ -7,7 +7,7 @@ const getWordQuery = ({
 	return `
 		SELECT
 			wid,
-			module_id
+			module_id moduleId
 		FROM
 			word_features
 		WHERE

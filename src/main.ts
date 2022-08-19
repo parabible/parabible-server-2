@@ -138,7 +138,7 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		treeNodeType,
 		modules,
 		corpusFilter,
-		pageNumber,
+		page,
 		pageSize
 	} = convertDeserializedQueryObject(Object.fromEntries(ctx.request.url.searchParams.entries()))
 	const searchTerms: SearchTerm[] = unprocessedSearchTerms.map((t: any) => {
@@ -208,7 +208,7 @@ router.get("/api/v2/termSearch", async (ctx) => {
 			treeNodeType,
 			moduleIds,
 			parallelIdQuery,
-			pageNumber,
+			page,
 			pageSize,
 		})
 		ctx.response.body = matchingSyntaxNodes
