@@ -4,6 +4,10 @@ import { getTermSearchQuery } from "../helpers/termSearchQueryBuilder.ts"
 import { getTextQuery } from "../helpers/parallelTextQueryBuilder.ts"
 import { getWordQuery } from "../helpers/wordMapQueryBuilder.ts"
 
+type ModuleWarmWords = {
+	moduleId: number
+	wids: number[]
+}
 type Params = {
 	searchTerms: SearchTerm[]
 	treeNodeType:
@@ -50,11 +54,27 @@ const get = ({
 					count: 0,
 					orderedResults: [[]],
 					matchingText: [],
-					matchingWords: []
+					matchingWords: [],
+					warmWords: [],
 				})
 			}
 
-			const orderedResults = data.map(d => d["parallel_id_set"] || [])
+			const warmWords: ModuleWarmWords[] = []
+			const findOrCreateModuleIndex = (moduleId: number) => {
+				const index = warmWords.findIndex(ww => ww.moduleId === moduleId)
+				if (index === -1) {
+					warmWords.push({ moduleId: moduleId, wids: [] })
+					return warmWords.length - 1
+				}
+				return index
+			}
+			data.forEach(d => {
+				if (d.moduleId && d.warmWids?.length) {
+					warmWords[findOrCreateModuleIndex(d.moduleId)].wids.push(...d.warmWids)
+				}
+			})
+
+			const orderedResults = data.map(d => d.parallelIdSet || [])
 
 			Promise.all([
 				new Promise<WordQueryResult>((resolve, reject) => {
@@ -79,7 +99,8 @@ const get = ({
 					count,
 					orderedResults,
 					matchingText,
-					matchingWords
+					matchingWords,
+					warmWords,
 				})
 			}).catch(error => {
 				console.error("Error while gathering words and paralel text")
