@@ -233,7 +233,6 @@ router.get("/api/v2/highlight", async (ctx) => {
 		t: searchTerms,
 		modules,
 		corpusFilter,
-		versificationSchema,
 	} = convertDeserializedQueryObject(Object.fromEntries(ctx.request.url.searchParams.entries()))
 
 
