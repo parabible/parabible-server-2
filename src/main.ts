@@ -128,7 +128,14 @@ router.get("/api/v2/text", async (ctx) => {
 	}
 })
 
-
+type TermSearchUrlParameters = {
+	t: any[]
+	treeNodeType: string
+	modules: string
+	corpusFilter: string
+	page: string
+	pageSize: string
+}
 // TERM SEARCH ROUTE
 import { get as getTermSearch } from "./routes/termSearch.ts"
 router.get("/api/v2/termSearch", async (ctx) => {
@@ -138,9 +145,9 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		treeNodeType,
 		modules,
 		corpusFilter,
-		page,
-		pageSize
-	} = convertDeserializedQueryObject(Object.fromEntries(ctx.request.url.searchParams.entries()))
+		page: pageNumberString,
+		pageSize: pageSizeString
+	}: TermSearchUrlParameters = convertDeserializedQueryObject(Object.fromEntries(ctx.request.url.searchParams.entries()))
 	const searchTerms: SearchTerm[] = unprocessedSearchTerms.map((t: any) => {
 		const { inverted, ...term } = t
 		return (inverted === "1" || inverted === "true")
@@ -174,9 +181,40 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		return sendError(ctx, {
 			error: true,
 			code: "NO_TREENODETYPE",
-			message: "No TreeNode Type provided (verse, sentence, clause, phrase)"
+			message: "No TreeNode Type provided (verse, sentence, clause, phrase, parallel)"
 		}, 400)
 	}
+	const possibleTreeNodeTypes = new Set(["phrase", "clause", "sentence", "verse", "parallel"])
+	if (!possibleTreeNodeTypes.has(treeNodeType)) {
+		return sendError(ctx, {
+			error: true,
+			code: "UNDEFINED_TREENODETYPE",
+			message: "TreeNode Type must be one of [verse, sentence, clause, phrase, parallel]"
+		}, 400)
+	}
+	if (!(pageNumberString === "" || pageNumberString === undefined)
+		&& !Number.isInteger(pageNumberString) || +pageNumberString < 0) {
+		return sendError(ctx, {
+			error: true,
+			code: "NO_PAGE",
+			message: "No page number provided. Expected integer ≥ 0."
+		}, 400)
+	}
+	const page = pageNumberString === "" || pageNumberString === undefined
+		? 0
+		: +pageNumberString
+	if (!(pageSizeString === "" || pageSizeString === undefined)
+		&& !Number.isInteger(pageSizeString) || +pageSizeString < 0) {
+		return sendError(ctx, {
+			error: true,
+			code: "NO_PAGE_SIZE",
+			message: "No page number provided. Expected integer ≥ 0."
+		}, 400)
+	}
+	const pageSize = pageSizeString === "" || pageSizeString === undefined
+		? 0
+		: +pageSizeString
+
 	// if (corpusFilter && typeof corpusFilter !== "string") {
 	// 	return sendError(ctx, {
 	// 		error: true,
@@ -202,12 +240,10 @@ router.get("/api/v2/termSearch", async (ctx) => {
 	// 	})
 	// 	: ""
 
-	// TODO: Handle /size being negative/strings...
-
 	try {
 		const matchingSyntaxNodes = await getTermSearch({
 			searchTerms,
-			treeNodeType,
+			treeNodeType: treeNodeType as "phrase" | "clause" | "sentence" | "verse" | "parallel",
 			moduleIds,
 			parallelIdQuery,
 			page,
