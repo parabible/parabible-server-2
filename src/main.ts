@@ -202,6 +202,8 @@ router.get("/api/v2/termSearch", async (ctx) => {
 	// 	})
 	// 	: ""
 
+	// TODO: Handle /size being negative/strings...
+
 	try {
 		const matchingSyntaxNodes = await getTermSearch({
 			searchTerms,
