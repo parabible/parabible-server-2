@@ -193,7 +193,7 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		}, 400)
 	}
 	if (!(pageNumberString === "" || pageNumberString === undefined)
-		&& !Number.isInteger(pageNumberString) || +pageNumberString < 0) {
+		&& (isNaN(Number.parseInt(pageNumberString)) || +pageNumberString < 0)) {
 		return sendError(ctx, {
 			error: true,
 			code: "NO_PAGE",
@@ -204,7 +204,7 @@ router.get("/api/v2/termSearch", async (ctx) => {
 		? 0
 		: +pageNumberString
 	if (!(pageSizeString === "" || pageSizeString === undefined)
-		&& !Number.isInteger(pageSizeString) || +pageSizeString < 0) {
+		&& (isNaN(Number.parseInt(pageSizeString)) || +pageSizeString < 0)) {
 		return sendError(ctx, {
 			error: true,
 			code: "NO_PAGE_SIZE",
