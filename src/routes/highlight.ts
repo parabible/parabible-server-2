@@ -6,7 +6,7 @@ import { getVersificationSchemaIdFromModuleId, getModuleIdsFromModules } from ".
 const moduleHighlightsToArrayOfArrays = (searchTerms: SearchTerm[]) =>
 	(moduleHighlights: ModuleHighlights) =>
 		searchTerms.map(({ uid }, i) =>
-			moduleHighlights[`w${i}`].map(wid => ({
+			moduleHighlights[`w${i}`].map((wid: number) => ({
 				uid,
 				moduleId: moduleHighlights.moduleId,
 				wid
