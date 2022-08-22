@@ -6,11 +6,11 @@ It implements the Parabible API documented *here* (TODO).
 
 This version of Parabible is currently **still under development**. It is fully implemented, but there are a number of things remaining to be done:
 
- - [] Get to 100% test coverage (it's not a big codebase)
- - [] Publicly document the API
- - [] Standardize error codes (include in the API)
- - [] Handle cases where incorrect parameters being supplied (refactor + break out require/allow code for parameters)
- - [] Do typescript better
+ - [ ] Get to 100% test coverage (it's not a big codebase)
+ - [ ] Publicly document the API
+ - [ ] Standardize error codes (include in the API)
+ - [ ] Handle cases where incorrect parameters being supplied (refactor + break out require/allow code for parameters)
+ - [ ] Do typescript better
 
 ## Running on Docker
 
