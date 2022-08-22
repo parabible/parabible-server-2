@@ -1,11 +1,10 @@
 import type { ClickhouseResponse } from "../../types.d.ts"
-const PROTOCOL = "http"
-const USERNAME = "admin"
-const PASSWORD = "toor"
-const SERVER_URL = "localhost:8123"
+const USERNAME = Deno.env.get("CLICKHOUSE_USER") || "admin"
+const PASSWORD = Deno.env.get("CLICKHOUSE_PASSWORD") || "toor"
+const SERVER_URL = Deno.env.get("CLICKHOUSE_URL") || "http://localhost:8123"
 
 const query = <T>(query: string) => new Promise<ClickhouseResponse<T>>((resolve, reject) => {
-	const queryString = PROTOCOL + "://" +
+	const queryString =
 		SERVER_URL +
 		"/?query=" +
 		encodeURIComponent(query + " FORMAT JSON")

@@ -327,4 +327,6 @@ app.use(router.allowedMethods())
 app.addEventListener("listen", () => {
 	console.log("Ready!")
 })
-app.listen({ port: 3000 })
+app.listen({
+	port: +(Deno.env.get("PORT") || 3000)
+})
