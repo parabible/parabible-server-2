@@ -11,6 +11,8 @@ This version of Parabible is currently **still under development**. It is fully 
  - [ ] Standardize error codes (include in the API)
  - [ ] Handle cases where incorrect parameters being supplied (refactor + break out require/allow code for parameters)
  - [ ] Do typescript better
+ - [ ] Implement chapter highlights endpoint
+ - [ ] Consider a termSearchCount endpoint (for suggesting changes to search filters)
 
 ## Running on Docker
 
