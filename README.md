@@ -7,14 +7,14 @@ It implements the Parabible API documented *here* (TODO).
 This version of Parabible is currently **still under development**. It is mostly implemented, but there are a number of things remaining to be done (in no particular order):
 
  - [X] Minimum implementation
- - [ ] Get to 100% test coverage (it's not a big codebase)
+ - [ ] Implement chapter highlights endpoint
  - [ ] Publicly document the API
- - [ ] Standardize error codes (include in the API)
  - [ ] Handle cases where incorrect parameters being supplied (refactor + break out require/allow code for parameters)
  - [ ] Render to html/json? (based on request headers)
- - [ ] Clean up typescript
- - [ ] Implement chapter highlights endpoint
  - [ ] Consider a termSearchCount endpoint (for suggesting changes to search filters)
+ - [ ] Clean up typescript
+ - [ ] Get to 100% test coverage (it's not a big codebase)
+ - [ ] Standardize error codes (include in the API)
 
 ## Running on Docker
 
