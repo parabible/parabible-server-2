@@ -8,6 +8,7 @@ This version of Parabible is currently **still under development**. It is mostly
 
  - [X] Minimum implementation
  - [ ] Implement chapter highlights endpoint
+ - [ ] Figure out how to handle embedded notes (all kinds: text critical [SBLGNT], commentary [NET], general footnotes [e.g., ESV])
  - [ ] Publicly document the API
  - [ ] Handle cases where incorrect parameters being supplied (refactor + break out require/allow code for parameters)
  - [ ] Render to html/json? (based on request headers)
