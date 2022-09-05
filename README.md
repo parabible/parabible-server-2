@@ -2,7 +2,7 @@
 
 This is the Parabible backend. It is written in typescript for the Deno runtime.
 
-It implements the Parabible API documented *here* (TODO).
+It implements the Parabible API documented [here](https://github.com/parabible/parabible-server-2/wiki) (WIP).
 
 This version of Parabible is currently **still under development**. It is mostly implemented, but there are a number of things remaining to be done (in no particular order):
 
