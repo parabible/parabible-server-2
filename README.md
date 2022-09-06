@@ -7,6 +7,12 @@ It implements the Parabible API documented [here](https://github.com/parabible/p
 This version of Parabible is currently **still under development**. It is mostly implemented, but there are a number of things remaining to be done (in no particular order):
 
  - [X] Minimum implementation
+   - **/health** (checks access to db and returns 200 "OK")
+   - **/module** (lists modules—eventually, will supply additional details given a moduleId)
+   - **/word** (returns data on individual words [by moduleId])
+   - **/text** (returns bible text with reference(s) and module(s))
+   - **/termSearch** (return matching verses given search terms)
+
  - [ ] Implement chapter highlights endpoint
  - [ ] Figure out how to handle embedded notes (all kinds: text critical [SBLGNT], commentary [NET], general footnotes [e.g., ESV])
  - [ ] Publicly document the API
