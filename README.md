@@ -33,9 +33,9 @@ To build and run the image:
 $ docker build .
 $ docker run -e PORT=3000 \
              -e CLICKHOUSE_USER=admin \
-             -e CLICKHOUSE_PASSWORD=toor \
+             -e CLICKHOUSE_PASSWORD=password \
              -e CLICKHOUSE_URL=http://localhost:8123 \
-        image_hash
+             image_hash
 ```
 
 You will need to provide the container with the necessary environmental variables:
