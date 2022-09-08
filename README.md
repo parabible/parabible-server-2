@@ -1,3 +1,5 @@
+![Parabible header image](./header.png)
+
 # Parabible Server
 
 This is the Parabible backend. It is written in typescript for the Deno runtime.
