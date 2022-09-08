@@ -17,7 +17,7 @@ This version of Parabible is currently **still under development**. It is mostly
 
  - [ ] Implement chapter highlights endpoint
  - [ ] Figure out how to handle embedded notes (all kinds: text critical [SBLGNT], commentary [NET], general footnotes [e.g., ESV])
- - [ ] Publicly document the API
+ - [ ] Finish documenting the [API](https://github.com/parabible/parabible-server-2/wiki)
  - [ ] Handle cases where incorrect parameters being supplied (refactor + break out require/allow code for parameters)
  - [ ] Render to html/json? (based on request headers)
  - [ ] Consider a termSearchCount endpoint (for suggesting changes to search filters)
