@@ -1,4 +1,5 @@
 import { Application, Router, Context } from "https://deno.land/x/oak@v6.5.0/mod.ts"
+import { oakCors } from "https://deno.land/x/cors/mod.ts"
 import { convertDeserializedQueryObject } from "https://cdn.skypack.dev/friendly-serializer"
 import { getModuleIdsFromModules } from "./helpers/moduleInfo.ts"
 import { generateParallelIdQueryFromCorpora } from "./helpers/parallelIdQueryBuilder.ts"
@@ -322,6 +323,9 @@ router.get("/api/v2/highlight", async (ctx) => {
 })
 
 const app = new Application()
+app.use(oakCors({
+	origin: '*',
+}))
 app.use(router.routes())
 app.use(router.allowedMethods())
 app.addEventListener("listen", () => {
