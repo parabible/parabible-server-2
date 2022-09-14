@@ -1,4 +1,4 @@
-import { assertEquals } from "https://deno.land/std/testing/asserts.ts"
+import { assertEquals } from "https://deno.land/std@0.149.0/testing/asserts.ts"
 import { getVersificationSchemaIdFromModuleId, getModuleIdsFromModules } from "../helpers/moduleInfo.ts"
 import { get as getTermSearch } from "./termSearch.ts"
 
@@ -82,6 +82,19 @@ Deno.test("should find results across versions (e.g. אֱלֹהִים translated
 	assertEquals(count > 0, true)
 })
 
+Deno.test("should find results across versions (e.g. אֱלֹהִים translated θεός)", async () => {
+	const { count } = await getTermSearch({
+		searchTerms: [
+			{ uid: "1", inverted: false, data: { lexeme: "φοίβη" } },
+		],
+		treeNodeType: "parallel",
+		moduleIds: getModuleIdsFromModules("etcbc bhsa,NET,Nestle1904"),
+		parallelIdQuery: "",
+		page: 0,
+		pageSize: 10
+	})
+	assertEquals(count > 0, true)
+})
 
 // TOOD: should handle corpus filters (parallelIdQuery)
 // TODO: it("should return the right number of words from Nestle1904", async () => {
