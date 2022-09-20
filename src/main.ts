@@ -95,6 +95,7 @@ router.get("/api/v2/word", async (ctx) => {
 	try {
 		const word: WordResponse = await getWord({ moduleId, wid })
 		ctx.response.body = word
+		ctx.response.headers.set("Cache-Control", "max-age=604800")
 	}
 	catch (error) {
 		console.error("ERROR FETCHING WORD:")
@@ -120,6 +121,7 @@ router.get("/api/v2/text", async (ctx) => {
 			modules,
 		})
 		ctx.response.body = parallelTexts
+		ctx.response.headers.set("Cache-Control", "max-age=604800")
 	}
 	catch (error) {
 		console.error("ERROR FETCHING WORD:")
@@ -251,6 +253,7 @@ router.get("/api/v2/termSearch", async (ctx) => {
 			pageSize,
 		})
 		ctx.response.body = matchingSyntaxNodes
+		ctx.response.headers.set("Cache-Control", "max-age=604800")
 	}
 	catch (error) {
 		console.error(error)
@@ -311,6 +314,7 @@ router.get("/api/v2/highlight", async (ctx) => {
 			corpusFilter,
 		})
 		ctx.response.body = matchingSyntaxNodes
+		ctx.response.headers.set("Cache-Control", "max-age=604800")
 	}
 	catch (error) {
 		console.log(error)
