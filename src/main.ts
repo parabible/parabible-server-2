@@ -242,7 +242,7 @@ router.get("/api/v2/termSearch", async (ctx) => {
 	// 	: ""
 
 	try {
-		const matchingSyntaxNodes = await getTermSearch({
+		const matchingSyntaxNodes: TermSearchResponse = await getTermSearch({
 			searchTerms,
 			treeNodeType: treeNodeType as "phrase" | "clause" | "sentence" | "verse" | "parallel",
 			moduleIds,
@@ -305,7 +305,7 @@ router.get("/api/v2/highlight", async (ctx) => {
 	}
 
 	try {
-		const matchingSyntaxNodes = await getHighlight({
+		const matchingSyntaxNodes: HighlightResponse = await getHighlight({
 			searchTerms,
 			modules, //TODO: create parsing function to get ids from string
 			corpusFilter,
