@@ -8,22 +8,33 @@ It implements the Parabible API documented [here](https://github.com/parabible/p
 
 This version of Parabible is currently **still under development**. It is mostly implemented, but there are a number of things remaining to be done (in no particular order):
 
- - [X] Minimum implementation
-   - **/health** (checks access to db and returns 200 "OK")
-   - **/module** (lists modules—eventually, will supply additional details given a moduleId)
-   - **/word** (returns data on individual words [by moduleId])
-   - **/text** (returns bible text with reference(s) and module(s))
-   - **/termSearch** (return matching verses given search terms)
-
- - [ ] Implement chapter highlights endpoint
+ - [X] Implement **/health** endpoint (checks access to db and returns 200 "OK")
+ - [X] Implement **/module** endpoint (lists modules—eventually, will supply additional details given a moduleId)
+ - [X] Implement **/word** endpoint (returns data on individual words [by moduleId])
+ - [X] Implement **/text** endpoint (returns bible text with reference(s) and module(s))
+ - [X] Implement **/termSearch** endpoint (return matching verses given search terms)
+ - [ ] Implement **/highlights** endpoint (chapter highlights)
  - [ ] Figure out how to handle embedded notes (all kinds: text critical [SBLGNT], commentary [NET], general footnotes [e.g., ESV])
+ - [ ] Consider a termSearchCount endpoint (for suggesting changes to search filters)
  - [ ] Finish documenting the [API](https://github.com/parabible/parabible-server-2/wiki)
+ - [ ] Standardize error codes (include in the API)
  - [ ] Handle cases where incorrect parameters being supplied (refactor + break out require/allow code for parameters)
  - [ ] Render to html/json? (based on request headers)
- - [ ] Consider a termSearchCount endpoint (for suggesting changes to search filters)
  - [ ] Clean up typescript
  - [ ] Get to 100% test coverage (it's not a big codebase)
- - [ ] Standardize error codes (include in the API)
+ - [ ] Figure out how to serve extra resources (like dictionaries)
+ - [ ] Figure out how to handle more complicated search concepts:
+    - Semantic domain subqueries (allow search on any level of the semantic domain)
+    - Participant awareness (i.e. understanding of antecedents of relative pronouns [data is available!])
+ 
+There's also tons of other work on the data pipeline and the client:
+ - Data Pipline (this is probably the easiest area to get involved in and have meaningful impact):
+   - Enriching data to parity with prod
+   - Doing an initial import of the apostolic fathers(!)
+   - Splitting out into a meaningful structure on github
+ - Client:
+   - The old client has just been hacked onto the new backend so it's got lots of issues to deal with...
+   - Consider supporting natural language queries...
 
 ## Running on Docker
 
