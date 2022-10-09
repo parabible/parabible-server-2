@@ -1,5 +1,7 @@
 import { query } from "../database/connection.ts"
 
+const HEALTH_CHECK_TIMEOUT = 5000
+
 type ModuleInfoResult = {
 	abbreviation: string
 	moduleId: number
@@ -17,13 +19,15 @@ let versificationIdToName: {
 } = {}
 
 const populate = () => {
-	query(`SELECT 
+	query(`
+		SELECT 
 			abbreviation,
 			versification_schema versificationSchema,
 			versification_schema_id versificationSchemaId,
 			module_id moduleId
 		FROM
-			module_info`).then((response: ClickhouseResponse<ModuleInfoResult>) => {
+			module_info
+	`).then((response: ClickhouseResponse<ModuleInfoResult>) => {
 		moduleAbbreviationToModuleId = Object.fromEntries(response.data.map(moduleInfo => [
 			moduleInfo.abbreviation.toLowerCase(),
 			moduleInfo.moduleId
@@ -36,8 +40,9 @@ const populate = () => {
 			moduleInfo.versificationSchemaId,
 			moduleInfo.versificationSchema
 		]))
+		console.log("Got module info from DB!")
 	}).catch(_ => {
-		setTimeout(populate, 1 * 1000)
+		setTimeout(populate, 1 * HEALTH_CHECK_TIMEOUT)
 	})
 }
 populate()
