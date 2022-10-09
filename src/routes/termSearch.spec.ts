@@ -82,7 +82,7 @@ Deno.test("should find results across versions (e.g. אֱלֹהִים translated
 	assertEquals(count > 0, true)
 })
 
-Deno.test("should find results across versions (e.g. אֱלֹהִים translated θεός)", async () => {
+Deno.test("should find NT result when first version listed does not include NT (can search across versions)", async () => {
 	const { count } = await getTermSearch({
 		searchTerms: [
 			{ uid: "1", inverted: false, data: { lexeme: "φοίβη" } },
