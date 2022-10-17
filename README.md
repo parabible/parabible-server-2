@@ -21,6 +21,8 @@ This version of Parabible is currently **still under development**. It is mostly
  - [ ] Handle cases where incorrect parameters being supplied (refactor + break out require/allow code for parameters)
  - [ ] Render to html/json? (based on request headers)
  - [ ] Clean up typescript
+ - [ ] Limit execution time of requests
+    - There also seems to be a random spike in time taken for some CH queries. We should track that down and fix...
  - [ ] Get to 100% test coverage (it's not a big codebase)
  - [ ] Figure out how to serve extra resources (like dictionaries)
  - [ ] Figure out how to handle more complicated search concepts:
