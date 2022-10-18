@@ -1,5 +1,5 @@
 import bookDetails from "../data/bookDetails.json" assert { type: "json" }
-import ReferenceParser from "https://cdn.skypack.dev/-/referenceparser@v1.2.1-NsxZPhwRcBqBTOeZY5MD/dist=es2019,mode=imports/optimized/referenceparser.js"
+import ReferenceParser from "https://cdn.skypack.dev/-/referenceparser@v1.2.2-frJmPWJHIaeRtBKcKkhe/dist=es2019,mode=imports/optimized/referenceparser.js"
 const rp = new ReferenceParser()
 
 const _getBookInt = (book: string) => {
