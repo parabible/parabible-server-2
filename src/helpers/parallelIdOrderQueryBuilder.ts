@@ -4,7 +4,6 @@ type Params = {
 }
 const getParallelOrdering = ({
 	parallelIdQuery,
-
 	versificationSchemaId
 }: Params) => {
 	return `
