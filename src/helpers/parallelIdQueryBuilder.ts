@@ -69,11 +69,11 @@ const parseCorpusPartial = (corpusPartial: string, { previousBook, previousChapt
 
 const distinct = <T>(...arr: any[]) => Array.from(new Set<T>(...arr))
 
-type CorpusCollection = "OT" | "NT"
+type CorpusCollection = "OT" | "NT" | "APF"
 const vSchemaCorpusCoverage: {
 	[schemaName: string]: CorpusCollection[]
 } = {
-	"kjv": ["OT", "NT"],
+	"kjv": ["OT", "NT", "APF"],
 	"bhs": ["OT"],
 	"gnt": ["NT"],
 	"lxx": ["OT"],
@@ -83,7 +83,8 @@ const vSchemaCorpusCoverage: {
 // NT: 40_000_000 - 66_999_999
 const constraints = {
 	"OT": [0, 39_999_999],
-	"NT": [40_000_000, 66_999_999]
+	"NT": [40_000_000, 66_999_999],
+	"APF": [111_000_000, 125_999_999]
 }
 const moduleIdsToVersificationSchemaConstraints = (moduleIds: number[]) => {
 	const schemas = moduleIds
