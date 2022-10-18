@@ -18,7 +18,7 @@ const query = <T>(query: string) => new Promise<ClickhouseResponse<T>>((resolve,
 		resolve(r)
 	}).catch(e => {
 		console.error("DATABASE ERROR")
-		console.error(queryString)
+		console.error(query)
 		console.error(e)
 		reject(e)
 	})
