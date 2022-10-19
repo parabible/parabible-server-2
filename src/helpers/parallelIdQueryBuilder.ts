@@ -1,11 +1,13 @@
 import { generateRid, parse } from "./reference.ts"
 import { getVersificationSchemaIdFromModuleId, getNameFromVersificationId } from "./moduleInfo.ts"
 
-const verseToCondition = (reference: Reference) => reference.verse
-	? `rid = ${generateRid(reference)}`
-	: reference.chapter
-		? `intDiv(rid, 1000) = ${generateRid(reference) / 1000}`
-		: `intDiv(rid, 1000000) = ${generateRid(reference) / 1000000}`
+const verseToCondition = (reference: Reference) => {
+	if (Number.isInteger(reference.verse))
+		return `rid = ${generateRid(reference)}`
+	if (Number.isInteger(reference.chapter))
+		return `intDiv(rid, 1000) = ${generateRid(reference) / 1000}`
+	return `intDiv(rid, 1000000) = ${generateRid(reference) / 1000000}`
+}
 
 const requireBothWithVerseOrBothWithout = (startingReference: Reference, endingReference: Reference) => {
 	if (startingReference.verse && endingReference.verse || !startingReference.verse && !endingReference.verse) {
@@ -26,14 +28,12 @@ const requireBothWithChapterOrBothWithout = (startingReference: Reference, endin
 const rangeToCondition = (startingReference: Reference, endingReference: Reference) => {
 	requireBothWithVerseOrBothWithout(startingReference, endingReference)
 	requireBothWithChapterOrBothWithout(endingReference, startingReference)
-	return startingReference.verse
-		? `(rid >= ${generateRid(startingReference)} AND rid <= ${generateRid(endingReference)})`
-		: startingReference.chapter
-			? `(rid >= ${generateRid(startingReference)} AND rid <= ${generateRid(endingReference) + 999})`
-			: `(rid >= ${generateRid(startingReference)} AND rid <= ${generateRid(endingReference) + 999999})`
+	if (Number.isInteger(startingReference.verse))
+		return `(rid >= ${generateRid(startingReference)} AND rid <= ${generateRid(endingReference)})`
+	if (Number.isInteger(startingReference.chapter))
+		return `(rid >= ${generateRid(startingReference)} AND rid <= ${generateRid(endingReference) + 999})`
+	return `(rid >= ${generateRid(startingReference)} AND rid <= ${generateRid(endingReference) + 999999})`
 }
-
-
 
 const hasWhatLooksLikeACorpus = (corpusPartial: string) => /[a-zA-Z]/g.test(corpusPartial)
 const hasWhatLooksLikeAChapterVerseDivision = (corpusPartial: string) => /\d\b.*\d/g.test(corpusPartial)
