@@ -53,7 +53,7 @@ const get = ({
 
 			if (data.length === 0) {
 				return mainResolve({
-					count: 0,
+					count,
 					orderedResults: [[]],
 					matchingText: [],
 					matchingWords: [],
