@@ -46,7 +46,7 @@ const get = ({
 		// console.debug("termSearchSql:", termSearchSql)
 
 		query(termSearchSql).then((matchingSyntaxNodes: ClickhouseResponse<TermSearchQueryResult>) => {
-			const count = matchingSyntaxNodes.rows_before_limit_at_least || -1
+			const count = matchingSyntaxNodes?.rows_before_limit_at_least || 0
 			//TODO: const = theabove might not work if we don't have a result size > the limit... 
 			// // (should test)
 			const data = matchingSyntaxNodes["data"] || []
