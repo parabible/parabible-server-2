@@ -206,12 +206,21 @@ router.get("/api/v2/termSearch", async (ctx) => {
 	const page = pageNumberString === "" || pageNumberString === undefined
 		? 0
 		: +pageNumberString
-	if (!(pageSizeString === "" || pageSizeString === undefined)
-		&& (isNaN(Number.parseInt(pageSizeString)) || +pageSizeString < 0)) {
+	if (pageSizeString === undefined ||
+		pageSizeString === "" ||
+		isNaN(Number.parseInt(pageSizeString)) ||
+		+pageSizeString < 0) {
 		return sendError(ctx, {
 			error: true,
 			code: "NO_PAGE_SIZE",
 			message: "No page number provided. Expected integer ≥ 0."
+		}, 400)
+	}
+	if (+pageSizeString > 100) {
+		return sendError(ctx, {
+			error: true,
+			code: "PAGE_SIZE_TOO_LARGE",
+			message: "Page size too large. Maximum is 100."
 		}, 400)
 	}
 	const pageSize = pageSizeString === "" || pageSizeString === undefined
