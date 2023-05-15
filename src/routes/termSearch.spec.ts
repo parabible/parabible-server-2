@@ -18,7 +18,7 @@ Deno.test("should return results from BHSA", async () => {
   const results = await getTermSearch({
     searchTerms: [{ uid: "1", inverted: false, data: { lexeme: "אמר" } }],
     treeNodeType: "clause",
-    moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
+    moduleIds: getModuleIdsFromModules("BHSA,NA1904"),
     parallelIdQuery: "",
     page: 0,
     pageSize: 10,
@@ -33,7 +33,7 @@ Deno.test("should normalize unicode characters", async () => {
   const { count } = await getTermSearch({
     searchTerms: [{ uid: "1", inverted: false, data: { lexeme: "נפשׁ" } }],
     treeNodeType: "clause",
-    moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
+    moduleIds: getModuleIdsFromModules("BHSA,NA1904"),
     parallelIdQuery: "",
     page: 0,
     pageSize: 10,
@@ -48,7 +48,7 @@ Deno.test("should work with inverted rules", async () => {
       { uid: "2", inverted: true, data: { lexeme: "נוח" } },
     ],
     treeNodeType: "parallel",
-    moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
+    moduleIds: getModuleIdsFromModules("BHSA,NA1904"),
     parallelIdQuery: "",
     page: 0,
     pageSize: 10,
@@ -63,7 +63,7 @@ Deno.test("should work with inverted rules", async () => {
       { uid: "2", inverted: true, data: { lexeme: "נוח" } },
     ],
     treeNodeType: "parallel",
-    moduleIds: getModuleIdsFromModules("ETCBC BHSA,ccat LXX,Nestle1904"),
+    moduleIds: getModuleIdsFromModules("BHSA,NA1904"),
     parallelIdQuery: "",
     page: 0,
     pageSize: 10,
@@ -89,10 +89,10 @@ Deno.test("should find results across versions (e.g. אֱלֹהִים translated
 Deno.test("should find NT result when first version listed does not include NT (can search across versions)", async () => {
   const { count } = await getTermSearch({
     searchTerms: [
-      { uid: "1", inverted: false, data: { lexeme: "φοίβη" } },
+      { uid: "1", inverted: false, data: { lexeme: "λόγος" } },
     ],
     treeNodeType: "parallel",
-    moduleIds: getModuleIdsFromModules("etcbc bhsa,NET,Nestle1904"),
+    moduleIds: getModuleIdsFromModules("bhsa,NA1904"),
     parallelIdQuery: "",
     page: 0,
     pageSize: 10,
@@ -100,7 +100,36 @@ Deno.test("should find NT result when first version listed does not include NT (
   assertEquals(count > 0, true);
 });
 
+Deno.test("should not find LXX results when searching the NT", async () => {
+  const r = await getTermSearch({
+    searchTerms: [
+      { uid: "1", inverted: false, data: { lexeme: "λόγος" } },
+    ],
+    treeNodeType: "parallel",
+    moduleIds: getModuleIdsFromModules("NA1904"),
+    parallelIdQuery: "",
+    page: 0,
+    pageSize: 10,
+  });
+  assertEquals(r.count === 0, true);
+});
+
+Deno.test("should find LXX results", async () => {
+  const r = await getTermSearch({
+    searchTerms: [
+      { uid: "1", inverted: false, data: { lexeme: "λόγος" } },
+    ],
+    treeNodeType: "parallel",
+    moduleIds: getModuleIdsFromModules("LXXR"),
+    parallelIdQuery: "",
+    page: 0,
+    pageSize: 10,
+  });
+  console.log(r);
+  assertEquals(r.count > 0, true);
+});
+
 // TOOD: should handle corpus filters (parallelIdQuery)
-// TODO: it("should return the right number of words from Nestle1904", async () => {
+// TODO: it("should return the right number of words from NA1904", async () => {
 // TODO: it("should return the right number of words from LXX", async () => {
 // TODO: it("should return the right number of words from combined", async () => {
