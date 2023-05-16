@@ -93,7 +93,12 @@ const get = ({
               (wordResult: ClickhouseResponse<WordQueryResult>) => {
                 resolve(wordResult["data"]);
               },
-            ).catch(reject);
+            ).catch((e) => {
+              console.error("Error while gathering words");
+              console.error(e);
+              console.error(wordQuery);
+              reject(e);
+            });
           }),
           new Promise<ParallelTextQueryResult>((resolve, reject) => {
             const parallelIds = orderedResults.flat();
@@ -104,7 +109,12 @@ const get = ({
               ) => {
                 resolve(parallelTextResult.data);
               },
-            ).catch(reject);
+            ).catch((e) => {
+              console.error("Error while gathering parallel text");
+              console.error(e);
+              console.error(parallelTextQuery);
+              reject(e);
+            });
           }),
         ]).then(([matchingWords, matchingText]: [
           matchingWords: WordQueryResult,
@@ -117,11 +127,7 @@ const get = ({
             matchingWords,
             warmWords,
           });
-        }).catch((error) => {
-          console.error("Error while gathering words and paralel text");
-          console.error(error);
-          mainReject(error);
-        });
+        }).catch(mainReject);
       },
     ).catch((error) => {
       console.error("Error while searching for terms");
