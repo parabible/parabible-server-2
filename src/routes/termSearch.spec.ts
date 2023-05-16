@@ -163,10 +163,6 @@ Deno.test("should reorder results with different module order", async () => {
     results1.orderedResults,
     results2.orderedResults,
   );
-  console.log(
-    results1.orderedResults,
-    results2.orderedResults,
-  );
 });
 
 // TOOD: should handle corpus filters (parallelIdQuery)
