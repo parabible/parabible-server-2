@@ -2,18 +2,20 @@ import type { ClickhouseResponse } from "../../types.d.ts";
 const USERNAME = Deno.env.get("CLICKHOUSE_USER") || "admin";
 const PASSWORD = Deno.env.get("CLICKHOUSE_PASSWORD") || "toor";
 const SERVER_URL = Deno.env.get("CLICKHOUSE_URL") || "http://localhost:8123";
+const encoder = new TextEncoder();
 
 const query = <T>(query: string) =>
   new Promise<ClickhouseResponse<T>>((resolve, reject) => {
-    const queryString = SERVER_URL +
-      "/?query=" +
-      encodeURIComponent(query + " FORMAT JSON");
-
-    fetch(queryString, {
+    fetch(SERVER_URL, {
+      method: "POST",
       headers: {
+        "Content-Type": "application/x-www-form-urlencoded",
         "X-ClickHouse-User": USERNAME,
         "X-ClickHouse-Key": PASSWORD,
       },
+      body: encoder.encode(
+        `${query} FORMAT JSON`,
+      ),
     }).then((r) => r.json()).then((r: ClickhouseResponse<T>) => {
       resolve(r);
     }).catch((e) => {
