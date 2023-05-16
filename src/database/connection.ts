@@ -14,7 +14,6 @@ const queryQueue: {
 
 let currentThreads = 0;
 const runNextQuery = async () => {
-  console.log("Current threads: " + currentThreads);
   if (currentThreads >= THREAD_LIMIT) {
     return;
   }
