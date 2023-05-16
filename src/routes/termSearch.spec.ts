@@ -1,4 +1,8 @@
-import { assertEquals } from "https://deno.land/std@0.149.0/testing/asserts.ts";
+import {
+  assertEquals,
+  assertNotEquals,
+} from "https://deno.land/std@0.149.0/testing/asserts.ts";
+import { generateParallelIdQueryFromCorpora } from "../helpers/parallelIdQueryBuilder.ts";
 import {
   getModuleIdsFromModules,
   getVersificationSchemaIdFromModuleId,
@@ -101,17 +105,23 @@ Deno.test("should find NT result when first version listed does not include NT (
 });
 
 Deno.test("should not find LXX results when searching the NT", async () => {
-  const r = await getTermSearch({
+  const results = await getTermSearch({
     searchTerms: [
       { uid: "1", inverted: false, data: { lexeme: "λόγος" } },
     ],
     treeNodeType: "parallel",
     moduleIds: getModuleIdsFromModules("NA1904"),
-    parallelIdQuery: "",
+    parallelIdQuery: generateParallelIdQueryFromCorpora({
+      corpusFilter: "matt-rev",
+      moduleIds: getModuleIdsFromModules("NA1904"),
+    }),
     page: 0,
     pageSize: 10,
   });
-  assertEquals(r.count === 0, true);
+  const resultsOutsideOfMattRev = results.matchingText.some(({ rid }) =>
+    rid < 40_000_000 || rid > 66_999_999
+  );
+  assertEquals(resultsOutsideOfMattRev, false);
 });
 
 Deno.test("should find LXX results", async () => {
@@ -125,8 +135,38 @@ Deno.test("should find LXX results", async () => {
     page: 0,
     pageSize: 10,
   });
-  console.log(r);
   assertEquals(r.count > 0, true);
+});
+
+Deno.test("should reorder results with different module order", async () => {
+  const results1 = await getTermSearch({
+    searchTerms: [
+      { uid: "1", inverted: false, data: { lexeme: "רַחוּם" } },
+    ],
+    treeNodeType: "parallel",
+    moduleIds: getModuleIdsFromModules("BHSA,NET"),
+    parallelIdQuery: "",
+    page: 0,
+    pageSize: 50,
+  });
+  const results2 = await getTermSearch({
+    searchTerms: [
+      { uid: "1", inverted: false, data: { lexeme: "רַחוּם" } },
+    ],
+    treeNodeType: "parallel",
+    moduleIds: getModuleIdsFromModules("NET,BHSA"),
+    parallelIdQuery: "",
+    page: 0,
+    pageSize: 50,
+  });
+  assertNotEquals(
+    results1.orderedResults,
+    results2.orderedResults,
+  );
+  console.log(
+    results1.orderedResults,
+    results2.orderedResults,
+  );
 });
 
 // TOOD: should handle corpus filters (parallelIdQuery)
