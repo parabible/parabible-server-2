@@ -13,7 +13,7 @@ This version of Parabible is currently **still under development**. It is mostly
  - [X] Implement **/word** endpoint (returns data on individual words [by moduleId])
  - [X] Implement **/text** endpoint (returns bible text with reference(s) and module(s))
  - [X] Implement **/termSearch** endpoint (return matching verses given search terms)
- - [x] Implement **/highlight** endpoint (chapter highlights)
+ - [X] Implement **/highlight** endpoint (chapter highlights)
    - Still need to write tests for highlight
  - [ ] Figure out how to handle embedded notes (all kinds: text critical [SBLGNT], commentary [NET], general footnotes [e.g., ESV])
  - [ ] Consider a termSearchCount endpoint (for suggesting changes to search filters)
