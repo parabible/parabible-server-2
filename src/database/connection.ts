@@ -2,6 +2,7 @@ import type { ClickhouseResponse } from "../../types.d.ts";
 const USERNAME = Deno.env.get("CLICKHOUSE_USER") || "admin";
 const PASSWORD = Deno.env.get("CLICKHOUSE_PASSWORD") || "toor";
 const SERVER_URL = Deno.env.get("CLICKHOUSE_URL") || "http://localhost:8123";
+const MAX_EXECUTION_TIME = Deno.env.get("MAX_EXECUTION_TIME") || 5;
 const encoder = new TextEncoder();
 
 const query = <T>(query: string) =>
@@ -14,7 +15,7 @@ const query = <T>(query: string) =>
         "X-ClickHouse-Key": PASSWORD,
       },
       body: encoder.encode(
-        `${query} FORMAT JSON`,
+        `${query} FORMAT JSON SETTINGS max_execution_time=${MAX_EXECUTION_TIME}`,
       ),
     }).then((r) => r.json()).then((r: ClickhouseResponse<T>) => {
       resolve(r);
