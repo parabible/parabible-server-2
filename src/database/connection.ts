@@ -2,7 +2,7 @@ import type { ClickhouseResponse } from "../../types.d.ts";
 const USERNAME = Deno.env.get("CLICKHOUSE_USER") || "admin";
 const PASSWORD = Deno.env.get("CLICKHOUSE_PASSWORD") || "toor";
 const SERVER_URL = Deno.env.get("CLICKHOUSE_URL") || "http://localhost:8123";
-const MAX_EXECUTION_TIME = Deno.env.get("MAX_EXECUTION_TIME") || 5;
+const MAX_EXECUTION_TIME = Number.parseInt(Deno.env.get("MAX_EXECUTION_TIME") || "") || 5;
 const THREAD_LIMIT = 3;
 const encoder = new TextEncoder();
 
@@ -34,6 +34,7 @@ const runNextQuery = async () => {
     body: encoder.encode(
       `${query} FORMAT JSON SETTINGS max_execution_time=${MAX_EXECUTION_TIME}`,
     ),
+    signal: AbortSignal.timeout(MAX_EXECUTION_TIME * 1000),
   }).then((r) => r.json()).then((r: ClickhouseResponse<unknown>) => {
     resolve(r);
   }).catch((e) => {
