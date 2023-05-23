@@ -62,3 +62,9 @@ You will need to provide the container with the necessary environmental variable
 | `CLICKHOUSE_USER` | User to authenticate with on Clickhouse (**admin**) |
 | `CLICKHOUSE_PASSWORD` | Password to authenticate with on Clickhouse (**toor**) |
 | `CLICKHOUSE_URL` | URL and port where Clickhouse can be reached (**http://localhost:8123**) |
+
+Optional variables:
+
+| Variable Name | Description |
+|---------------|-------------|
+| `MAX_EXECUTION_TIME` | Maximum time to wait for a response from the API (**5s**) |
