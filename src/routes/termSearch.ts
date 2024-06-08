@@ -4,6 +4,21 @@ import { getTermSearchQuery } from "../helpers/termSearchQueryBuilder.ts";
 import { getTextQuery } from "../helpers/parallelTextQueryBuilder.ts";
 import { getWordQuery } from "../helpers/wordMapQueryBuilder.ts";
 
+const mapMatchingTextSearchResults = (
+  orderedResults,
+  matchingText,
+  moduleIds,
+) =>
+  orderedResults.map((parallelIds) =>
+    moduleIds.map((moduleId) =>
+      parallelIds.map((parallelId) =>
+        matchingText.find((row) =>
+          row.parallelId === parallelId && row.moduleId === moduleId
+        )
+      )
+    )
+  );
+
 type ModuleWarmWords = {
   moduleId: number;
   wids: number[];
@@ -57,7 +72,6 @@ const get = ({
         if (data.length === 0) {
           return mainResolve({
             count,
-            orderedResults: [[]],
             matchingText: [],
             matchingWords: [],
             warmWords: [],
@@ -122,8 +136,11 @@ const get = ({
         ]) => {
           mainResolve({
             count,
-            orderedResults,
-            matchingText,
+            matchingText: mapMatchingTextSearchResults(
+              orderedResults,
+              matchingText,
+              moduleIds,
+            ),
             matchingWords,
             warmWords,
           });

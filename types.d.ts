@@ -29,13 +29,7 @@ type WordResponse = {
 }
 type TermSearchResponse = {
 	count: number
-	orderedResults: number[][]
-	matchingText: {
-		parallelId: number
-		moduleId: number
-		rid: number
-		text: string
-	}[],
+	matchingText: DisambiguatedTextResult[][]
 	matchingWords: {
 		wid: number
 		moduleId: number
@@ -52,10 +46,22 @@ type HighlightResponse = {
 		wid: number
 	}[]
 }
-type TextResponse = {
-	matchingText: ParallelTextQueryResult,
-	order: number[]
+type TextResponse = (DisambiguatedTextResult | null)[][]
+type DisambiguatedTextResult = {
+	parallelId: number
+	moduleId: number
+	rid: number
+	type: "wordArray" | "html"
+	wordArray: WordArray
+	html: string
 }
+
+type WordArray = {
+	wid: number
+	leader?: string
+	text: string
+	trailer?: string
+}[]
 
 type ClickhouseResponse<T> = {
 	data: T
@@ -79,12 +85,13 @@ type WordQueryResult = {
 type ParallelOrderingResult = {
 	parallelId: number
 }[]
-type ParallelTextQueryResult = {
+type ParallelTextQueryResultRow = {
 	parallelId: number
 	moduleId: number
 	rid: number
 	text: string
-}[]
+}
+type ParallelTextQueryResult = ParallelTextQueryResultRow[]
 type TermSearchQueryResult = {
 	moduleId?: number
 	lowestParallelId: number
