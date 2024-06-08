@@ -3,19 +3,26 @@ import { getVersificationSchemaIdFromModuleId } from "../helpers/moduleInfo.ts";
 import { getTermSearchQuery } from "../helpers/termSearchQueryBuilder.ts";
 import { getTextQuery } from "../helpers/parallelTextQueryBuilder.ts";
 import { getWordQuery } from "../helpers/wordMapQueryBuilder.ts";
+import { mapTextResult } from "../helpers/mapTextResult.ts";
 
-const mapMatchingTextSearchResults = (
+type MapToTermSearchResponseFunction = (
+  orderedResults: number[][],
+  matchingText: ParallelTextQueryResult,
+  moduleIds: number[],
+) => TermSearchTextResponse;
+const mapMatchingTextSearchResults: MapToTermSearchResponseFunction = (
   orderedResults,
   matchingText,
   moduleIds,
 ) =>
   orderedResults.map((parallelIds) =>
     moduleIds.map((moduleId) =>
-      parallelIds.map((parallelId) =>
-        matchingText.find((row) =>
+      parallelIds.map((parallelId) => {
+        const row = matchingText.find((row) =>
           row.parallelId === parallelId && row.moduleId === moduleId
-        )
-      )
+        );
+        return row ? mapTextResult(row) : null;
+      })
     )
   );
 

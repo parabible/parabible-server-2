@@ -27,9 +27,10 @@ type WordResponse = {
 		value: string
 	}[]
 }
+
 type TermSearchResponse = {
 	count: number
-	matchingText: DisambiguatedTextResult[][]
+	matchingText: TermSearchTextResponse
 	matchingWords: {
 		wid: number
 		moduleId: number
@@ -46,7 +47,6 @@ type HighlightResponse = {
 		wid: number
 	}[]
 }
-type TextResponse = (DisambiguatedTextResult | null)[][]
 type DisambiguatedTextResult = {
 	parallelId: number
 	moduleId: number
@@ -55,6 +55,8 @@ type DisambiguatedTextResult = {
 	wordArray: WordArray
 	html: string
 }
+type TextResponse = (DisambiguatedTextResult | null)[][]
+type TermSearchTextResponse = (DisambiguatedTextResult | null)[][][]
 
 type WordArray = {
 	wid: number
