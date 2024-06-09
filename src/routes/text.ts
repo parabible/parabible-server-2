@@ -6,6 +6,18 @@ import {
   getModuleIdsFromModules,
   getVersificationSchemaIdFromModuleId,
 } from "../helpers/moduleInfo.ts";
+import { mapTextResult } from "../helpers/mapTextResult.ts";
+
+const getMatchingTextForModuleAndRow = (
+  moduleId: number,
+  parallelId: number,
+  matchingTextResult: ParallelTextQueryResult,
+) => {
+  const matchingText = matchingTextResult.find(
+    (row) => row.moduleId === moduleId && row.parallelId === parallelId,
+  );
+  return matchingText ? mapTextResult(matchingText) : null;
+};
 
 type Params = {
   modules: string;
@@ -46,10 +58,17 @@ const get = ({ reference, modules }: Params) =>
       matchingText: ParallelTextQueryResult,
       order: ParallelOrderingResult,
     ]) => {
-      mainResolve({
-        matchingText,
-        order: order.map((row) => row.parallelId),
-      });
+      mainResolve(
+        order.map((row) =>
+          moduleIds.map((moduleId) =>
+            getMatchingTextForModuleAndRow(
+              moduleId,
+              row.parallelId,
+              matchingText,
+            )
+          )
+        ),
+      );
     }).catch((error) => {
       console.error("Error while gathering words and paralel text");
       console.error(error);
