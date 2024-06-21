@@ -21,8 +21,8 @@ const mapMatchingTextSearchResults: MapToTermSearchResponseFunction = (
         const row = matchingText.find((row) =>
           row.parallelId === parallelId && row.moduleId === moduleId
         );
-        return row ? mapTextResult(row) : [];
-      })
+        return row ? mapTextResult(row) : null;
+      }).filter(parallelText => !!parallelText) 
     )
   );
 
