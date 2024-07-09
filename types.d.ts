@@ -55,7 +55,7 @@ type WordArray = {
 	leader?: string
 	text: string
 	trailer?: string
-	temp?: string
+	temp?: "warm" | "hot" | ""
 }[]
 
 type ClickhouseResponse<T> = {
