@@ -77,7 +77,7 @@ const getTermSearchQuery = ({
 			HAVING
 				${treeNode(treeNodeType)} > 0
 				AND ${searchTerms.map(searchTermToHavingLength).join("\n\t\t\tAND ")}
-				${parallelIdQuery ? `AND parallel_id IN (${parallelIdQuery})` : ""}
+				${parallelIdQuery ? `AND arrayJoin(parallelIdSet) IN (${parallelIdQuery})` : ""}
 		) t
 		LEFT JOIN ordering_index
 			ON ordering_index.parallel_id = t.lowestParallelId
