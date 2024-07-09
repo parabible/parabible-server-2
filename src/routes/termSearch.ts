@@ -7,24 +7,60 @@ import { mapTextResult } from "../helpers/mapTextResult.ts";
 
 type MapToTermSearchResponseFunction = (
   orderedResults: number[][],
-  matchingText: ParallelTextQueryResult,
+  matchingText: DisambiguatedTextResult[],
   moduleIds: number[],
 ) => TermSearchTextResponse;
-const mapMatchingTextSearchResults: MapToTermSearchResponseFunction = (
-  orderedResults,
+const denormalizeParallelTextsIntoSearchResults:
+  MapToTermSearchResponseFunction = (
+    orderedResults,
+    matchingText,
+    moduleIds,
+  ) =>
+    orderedResults.map((parallelIds) =>
+      moduleIds.map((moduleId) =>
+        parallelIds.map((parallelId) => {
+          const row = matchingText.find((row) =>
+            row.parallelId === parallelId && row.moduleId === moduleId
+          );
+          return row || null;
+        }).filter((parallelText) => !!parallelText)
+      )
+    );
+
+const integrateWordTemperatureIntoParallelTexts: (
+  matchingText: ParallelTextQueryResult,
+  matchingWords: WordQueryResult,
+  warmWords: ModuleWarmWords[],
+) => DisambiguatedTextResult[] = (
   matchingText,
-  moduleIds,
-) =>
-  orderedResults.map((parallelIds) =>
-    moduleIds.map((moduleId) =>
-      parallelIds.map((parallelId) => {
-        const row = matchingText.find((row) =>
-          row.parallelId === parallelId && row.moduleId === moduleId
-        );
-        return row ? mapTextResult(row) : null;
-      }).filter(parallelText => !!parallelText) 
-    )
-  );
+  matchingWords,
+  warmWords,
+) => {
+  const warmWordsLookup = warmWords.map(({ wids, moduleId }) =>
+    wids.map((wid) => ({ wid, moduleId }))
+  ).flat();
+  const temperatureMap: { [key: string]: "warm" | "hot" } = {
+    ...Object.fromEntries(warmWordsLookup.map(({ wid, moduleId }) => [
+      `${wid}-${moduleId}`,
+      "warm",
+    ])),
+    ...Object.fromEntries(matchingWords.map(({ wid, moduleId }) => [
+      `${wid}-${moduleId}`,
+      "hot",
+    ])),
+  };
+
+  return matchingText.map((row) => {
+    const mappedRow = mapTextResult(row);
+    if (mappedRow.type === "wordArray") {
+      mappedRow.wordArray = mappedRow.wordArray.map((word) => ({
+        ...word,
+        temp: temperatureMap[`${word.wid}-${row.moduleId}`] || "",
+      }));
+    }
+    return mappedRow;
+  });
+};
 
 type ModuleWarmWords = {
   moduleId: number;
@@ -80,8 +116,6 @@ const get = ({
           return mainResolve({
             count,
             matchingText: [],
-            matchingWords: [],
-            warmWords: [],
           });
         }
 
@@ -143,13 +177,15 @@ const get = ({
         ]) => {
           mainResolve({
             count,
-            matchingText: mapMatchingTextSearchResults(
+            matchingText: denormalizeParallelTextsIntoSearchResults(
               orderedResults,
-              matchingText,
+              integrateWordTemperatureIntoParallelTexts(
+                matchingText,
+                matchingWords,
+                warmWords,
+              ),
               moduleIds,
             ),
-            matchingWords,
-            warmWords,
           });
         }).catch(mainReject);
       },
