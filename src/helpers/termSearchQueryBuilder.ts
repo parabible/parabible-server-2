@@ -11,7 +11,7 @@ const treeNode = (tnt: keyof typeof mapTreeNodeTypes) =>
 		? mapTreeNodeTypes[tnt]
 		: "parallel_id"
 
-const toNormalizedKVPairs = (obj: any) =>
+const toNormalizedKVPairs = (obj: {[key: string]: string}) =>
 	Object.keys(obj).map(k => ({ key: k, value: obj[k].normalize("NFC") }))
 
 const featureToWhere = ({ key, value }: { key: string; value: string }) =>
