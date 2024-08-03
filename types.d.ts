@@ -31,14 +31,6 @@ type WordResponse = {
 type TermSearchResponse = {
 	count: number
 	matchingText: TermSearchTextResponse
-	matchingWords: {
-		wid: number
-		moduleId: number
-	}[]
-	warmWords: {
-		wids: number[]
-		moduleId: number
-	}[]
 }
 type HighlightResponse = {
 	data: {
@@ -63,6 +55,7 @@ type WordArray = {
 	leader?: string
 	text: string
 	trailer?: string
+	temp?: "warm" | "hot" | ""
 }[]
 
 type ClickhouseResponse<T> = {

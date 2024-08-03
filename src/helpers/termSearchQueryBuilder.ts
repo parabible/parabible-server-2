@@ -11,7 +11,7 @@ const treeNode = (tnt: keyof typeof mapTreeNodeTypes) =>
 		? mapTreeNodeTypes[tnt]
 		: "parallel_id"
 
-const toNormalizedKVPairs = (obj: any) =>
+const toNormalizedKVPairs = (obj: {[key: string]: string}) =>
 	Object.keys(obj).map(k => ({ key: k, value: obj[k].normalize("NFC") }))
 
 const featureToWhere = ({ key, value }: { key: string; value: string }) =>
@@ -77,7 +77,7 @@ const getTermSearchQuery = ({
 			HAVING
 				${treeNode(treeNodeType)} > 0
 				AND ${searchTerms.map(searchTermToHavingLength).join("\n\t\t\tAND ")}
-				${parallelIdQuery ? `AND parallel_id IN (${parallelIdQuery})` : ""}
+				${parallelIdQuery ? `AND arrayJoin(parallelIdSet) IN (${parallelIdQuery})` : ""}
 		) t
 		LEFT JOIN ordering_index
 			ON ordering_index.parallel_id = t.lowestParallelId
