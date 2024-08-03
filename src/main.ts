@@ -4,6 +4,10 @@ import { convertDeserializedQueryObject } from "https://cdn.skypack.dev/friendly
 import { getModuleIdsFromModules } from "./helpers/moduleInfo.ts"
 import { generateParallelIdQueryFromCorpora } from "./helpers/parallelIdQueryBuilder.ts"
 
+// 604800 = 168 hours
+// 21600  = 6 hours
+const CACHE_FOR_N_SECONDS = 21600
+
 type ErrorResponse = {
 	error: boolean,
 	code: string,
@@ -323,7 +327,7 @@ router.get("/api/v2/highlight", async (ctx) => {
 			corpusFilter,
 		})
 		ctx.response.body = matchingSyntaxNodes
-		ctx.response.headers.set("Cache-Control", "max-age=604800")
+		ctx.response.headers.set("Cache-Control", `max-age=${CACHE_FOR_N_SECONDS}`)
 	}
 	catch (error) {
 		console.log(error)
